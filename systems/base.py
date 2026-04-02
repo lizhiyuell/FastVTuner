@@ -3,8 +3,15 @@ from __future__ import annotations
 from abc import ABC, abstractmethod
 from dataclasses import asdict, dataclass
 from random import Random
+from pathlib import Path
+import json
+import sys
 from typing import Any, Literal
 
+from systems.vdb_config import VDBConfig
+from systems.vdb_engine import VDBEngine
+
+from common import *
 
 Phase = Literal["tune", "test"]
 
@@ -31,11 +38,15 @@ class SystemBase(ABC):
     # 初始化系统基类状态，包括随机种子、固定参数和历史记录容器。
     def __init__(
         self,
+        vdb_name: str,
+        dataset_name: str,
         single_tune_query_ratio: float = 0.5,
         single_test_query_ratio: float = 0.5,
-        seed: int = 42,
     ) -> None:
-        self.seed = seed
+        self.seed = 42
+        self.vdb_name = vdb_name
+        self.vdb_config = VDBConfig(vdb_name)
+        self.vdb_engine = VDBEngine(vdb_name)
 
         # 设置tune和test的query的比例（在原来的query数据集中切分）
         assert single_tune_query_ratio > 0 and single_tune_query_ratio < 1
@@ -44,51 +55,29 @@ class SystemBase(ABC):
         self._single_tune_query_ratio = single_tune_query_ratio
         self._single_test_query_ratio = single_test_query_ratio
 
-        self.dataset_name: str | None = None
+        self.dataset_name = dataset_name
+        self.vdb_engine.load_dataset(dataset_name)
         self._history: list[TuningRecord] = []
         self._step_id = 0
-        self._rng = Random(seed)
+        self._rng = Random(self.seed)
+        workload_name = Path(getattr(sys.modules.get("__main__"), "__file__", "interactive")).stem
+        log_dir = RESULT_ROOT / workload_name / self.vdb_name
+        log_dir.mkdir(parents=True, exist_ok=True)
+        self._log_path = log_dir / f"{self.dataset_name}.txt"
+        self._log_file = self._log_path.open("w", encoding="utf-8")
+
+    def __del__(self) -> None:
+        try:
+            log_file = getattr(self, "_log_file", None)
+            if log_file is not None and not log_file.closed:
+                log_file.close()
+        except Exception:
+            pass
 
     # 返回只读形式的历史记录，避免外部直接修改内部列表。
     @property
     def history(self) -> tuple[TuningRecord, ...]:
         return tuple(self._history)
-
-    # 绑定当前实验使用的数据集名称，并触发子类的数据集切换钩子。
-    # 这里本身不做底层原始数据装载，只负责维护系统层面的状态切换。
-    def load_dataset(self, dataset_name: str) -> None:
-        if not dataset_name:
-            raise ValueError("dataset_name must be a non-empty string")
-
-        if self.dataset_name != dataset_name:
-            self._history.clear()
-            self._step_id = 0
-
-        self.dataset_name = dataset_name
-        self._on_dataset_loaded(dataset_name)
-
-    # 按当前比例将 query 下标，随机拆分为互不重叠的 tune/test 两部分。
-    def split_query_indices(self, total_queries: int) -> tuple[list[int], list[int]]:
-        if total_queries <= 0:
-            raise ValueError("total_queries must be positive")
-
-        indices = list(range(total_queries))
-        self._rng.shuffle(indices) # 这里的seed是固定的
-
-        tune_count = int(total_queries * self._single_tune_query_ratio)
-        if self._single_tune_query_ratio > 0.0 and tune_count == 0:
-            tune_count = 1
-        tune_count = min(total_queries, tune_count)
-
-        remaining = total_queries - tune_count
-        test_count = int(total_queries * self._single_test_query_ratio)
-        if self._single_test_query_ratio > 0.0 and test_count == 0 and remaining > 0:
-            test_count = 1
-        test_count = min(remaining, test_count)
-
-        tune_indices = indices[:tune_count]
-        test_indices = indices[tune_count : tune_count + test_count]
-        return tune_indices, test_indices
 
     # 执行一次调优步骤，并将结果追加到历史记录中。
     def single_tune(self, **kwargs: Any) -> TuningRecord:
@@ -103,6 +92,9 @@ class SystemBase(ABC):
         self._require_dataset()
         record = runner(**kwargs)
         self._append_record(record, expected_phase=phase)
+        self._log_file.write(json.dumps(record.to_dict(), ensure_ascii=False))
+        self._log_file.write("\n")
+        self._log_file.flush()
         return record
 
     # 校验记录合法性，并维护统一递增的 step_id 与历史列表。
@@ -125,12 +117,8 @@ class SystemBase(ABC):
         if self.dataset_name is None:
             raise RuntimeError("No dataset is bound. Call load_dataset() first.")
 
-    # 子类可选钩子：在切换数据集后准备特定状态。
-    def _on_dataset_loaded(self, dataset_name: str) -> None:
-        pass
-
     @abstractmethod
-    # 子类需要实现：执行一次具体的调优逻辑。
+    # 子类需要实现：执行一次具体的调优逻辑（包含一次index构建和一次index检索）。
     def _single_tune_impl(self, **kwargs: Any) -> TuningRecord:
         raise NotImplementedError
 

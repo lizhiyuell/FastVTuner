@@ -600,19 +600,19 @@ class VDTunerSystem(SystemBase):
 
     def __init__(
         self,
+        vdb_name: str = "milvus",
+        dataset_name: str = "glove-100-angular-p-10",
         single_tune_query_ratio: float = 0.5,
         single_test_query_ratio: float = 0.5,
-        seed: int = 42,
         engine_name: str = DEFAULT_ENGINE_NAME,
         results_dir: str | Path = RESULTS_DIR,
         benchmark_timeout: float = 86400.0,
-        **fixed_params: Any,
     ) -> None:
         super().__init__(
+            vdb_name=vdb_name,
+            dataset_name=dataset_name,
             single_tune_query_ratio=single_tune_query_ratio,
             single_test_query_ratio=single_test_query_ratio,
-            seed=seed,
-            **fixed_params,
         )
         self.engine_name = engine_name
         self.results_dir = Path(results_dir)
@@ -624,14 +624,24 @@ class VDTunerSystem(SystemBase):
         self.dimension: int | None = None
         self._env = RealEnv()
         self._optimizer: PollingBayesianOptimization | None = None
-        self._dataset_run_params: str | None = None
+        self._dataset_run_params = dataset_name
         self._cached_test_record: TuningRecord | None = None
         self._cached_test_params: tuple[Any, ...] | None = None
+        self.dimension = infer_dimension_from_dataset_name(dataset_name)
+        if self.dimension:
+            update_m_with_dimension(int(self.dimension))
 
-    def _on_dataset_loaded(self, dataset_name: str) -> None:
-        self.dimension = infer_dimension_from_dataset_name(dataset_name) or self.fixed_params.get(
-            "dimension"
-        )
+    def load_dataset(self, dataset_name: str) -> None:
+        if not dataset_name:
+            raise ValueError("dataset_name must be a non-empty string")
+
+        if self.dataset_name != dataset_name:
+            self._history.clear()
+            self._step_id = 0
+
+        self.dataset_name = dataset_name
+        self.vdb_engine.load_dataset(dataset_name)
+        self.dimension = infer_dimension_from_dataset_name(dataset_name)
         if self.dimension:
             update_m_with_dimension(int(self.dimension))
         self._dataset_run_params = dataset_name
@@ -924,7 +934,7 @@ DEFAULT_DATASET_RUNS = [
 
 
 def run_main(total_nr_step: int = 300, datasets: Iterable[str] = DEFAULT_DATASET_RUNS):
-    system = VDTunerSystem(seed=1)
+    system = VDTunerSystem()
     system.run_legacy_optimization(datasets=datasets, total_nr_step=total_nr_step)
 
 
