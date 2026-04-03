@@ -27,6 +27,8 @@ class TuningRecord:
     query_time: float # 本轮所有查询的总耗时
     recall: float # 平均召回率
     record_nr: int # 本轮参与统计的查询总条目数
+    query_throughput: float = 0.0 # query吞吐率
+    query_latency: float = 0.0 # 平均query延迟
 
     # 将调优记录转换为普通字典，便于序列化或写日志。
     def to_dict(self) -> dict[str, Any]:
@@ -40,6 +42,7 @@ class SystemBase(ABC):
         self,
         vdb_name: str,
         dataset_name: str,
+        top_k: int = 10,
         single_tune_query_ratio: float = 0.5,
         single_test_query_ratio: float = 0.5,
     ) -> None:
@@ -48,12 +51,11 @@ class SystemBase(ABC):
         self.vdb_config = VDBConfig(vdb_name)
         self.vdb_engine = VDBEngine(vdb_name)
 
-        # 设置tune和test的query的比例（在原来的query数据集中切分）
-        assert single_tune_query_ratio > 0 and single_tune_query_ratio < 1
-        assert single_test_query_ratio > 0 and single_test_query_ratio < 1
-        assert single_tune_query_ratio + single_test_query_ratio <= 1
-        self._single_tune_query_ratio = single_tune_query_ratio
-        self._single_test_query_ratio = single_test_query_ratio
+        self._set_query_ratios(
+            single_tune_query_ratio=single_tune_query_ratio,
+            single_test_query_ratio=single_test_query_ratio,
+        )
+        self.set_top_k(10)
 
         self.dataset_name = dataset_name
         self.vdb_engine.load_dataset(dataset_name)
@@ -65,6 +67,8 @@ class SystemBase(ABC):
         log_dir.mkdir(parents=True, exist_ok=True)
         self._log_path = log_dir / f"{self.dataset_name}.txt"
         self._log_file = self._log_path.open("w", encoding="utf-8")
+
+        self.set_top_k(top_k)
 
     def __del__(self) -> None:
         try:
@@ -79,18 +83,35 @@ class SystemBase(ABC):
     def history(self) -> tuple[TuningRecord, ...]:
         return tuple(self._history)
 
+    # 统一设置并检查 tune/test 默认 query ratio。
+    def _set_query_ratios(
+        self,
+        single_tune_query_ratio: float,
+        single_test_query_ratio: float,
+    ) -> None:
+        assert 0 < single_tune_query_ratio < 1
+        assert 0 < single_test_query_ratio < 1
+        assert single_tune_query_ratio + single_test_query_ratio <= 1
+        self._single_tune_query_ratio = single_tune_query_ratio
+        self._single_test_query_ratio = single_test_query_ratio
+
+    def set_top_k(self, top_k):
+        if int(top_k) <= 0:
+            raise ValueError("top_k must be positive")
+        self._top_k = int(top_k)
+
     # 执行一次调优步骤，并将结果追加到历史记录中。
-    def single_tune(self, **kwargs: Any) -> TuningRecord:
-        return self._run_phase("tune", self._single_tune_impl, **kwargs)
+    def single_tune(self) -> TuningRecord:
+        return self._run_phase("tune", self._single_tune_impl)
 
     # 执行一次测试步骤，并将结果追加到历史记录中。
-    def single_test(self, **kwargs: Any) -> TuningRecord:
-        return self._run_phase("test", self._single_test_impl, **kwargs)
+    def single_test(self) -> TuningRecord:
+        return self._run_phase("test", self._single_test_impl)
 
     # 执行指定阶段并统一维护结果校验与历史记录。
-    def _run_phase(self, phase: Phase, runner, **kwargs: Any) -> TuningRecord:
+    def _run_phase(self, phase: Phase, runner) -> TuningRecord:
         self._require_dataset()
-        record = runner(**kwargs)
+        record = runner()
         self._append_record(record, expected_phase=phase)
         self._log_file.write(json.dumps(record.to_dict(), ensure_ascii=False))
         self._log_file.write("\n")
@@ -107,9 +128,8 @@ class SystemBase(ABC):
             raise ValueError(
                 "record dataset_name does not match the currently bound dataset"
             )
-        self._step_id += 1
-        if record.step_id != self._step_id:
-            record.step_id = self._step_id
+        if record.step_id <= 0:
+            raise ValueError("record step_id must be positive")
         self._history.append(record)
 
     # 确保当前系统已经绑定数据集，否则拒绝执行 tune/test。
@@ -119,10 +139,10 @@ class SystemBase(ABC):
 
     @abstractmethod
     # 子类需要实现：执行一次具体的调优逻辑（包含一次index构建和一次index检索）。
-    def _single_tune_impl(self, **kwargs: Any) -> TuningRecord:
+    def _single_tune_impl(self) -> TuningRecord:
         raise NotImplementedError
 
     @abstractmethod
     # 子类需要实现：执行一次具体的测试逻辑。
-    def _single_test_impl(self, **kwargs: Any) -> TuningRecord:
+    def _single_test_impl(self) -> TuningRecord:
         raise NotImplementedError

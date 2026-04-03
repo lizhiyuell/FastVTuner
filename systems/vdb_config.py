@@ -36,6 +36,8 @@ class VDBConfig:
 
         # parsing the parameter information
         self.param_names = list(meta_config.keys())
+        # default values in the same order as param_names
+        self.default_config = []
         # save the normalized paramters between [0, 1]
         self.normalized_parameter = []
         # unormalized parameters
@@ -48,6 +50,7 @@ class VDBConfig:
             detail = meta_config[param_name]
 
             # load the default parameters
+            self.default_config.append(detail["default"])
             self.current_params.append(detail["default"])
 
             knob_type = detail["type"]
@@ -113,13 +116,55 @@ class VDBConfig:
             else:
                 raise ValueError(f"Unsupported knob type: {meta['type']}")
 
+    def _get_param_meta(self, param_name):
+        for meta in self.param_meta:
+            if meta["name"] == param_name:
+                return meta
+        raise ValueError(f"Unknown parameter name: {param_name}")
+
     def get_normalized_param(self) -> list[float]:
         return list(self.normalized_parameter)
 
     def get_original_param(self) -> list[Any]:
         return list(self.current_params)
 
-    def set_normalized_param(self, params: list[float]) -> None:
+    def get_param_index(self, param_name):
+        return self.param_names.index(param_name)
+
+    def get_normalized(self, param_name, param_value):
+        meta = self._get_param_meta(param_name)
+
+        if meta["type"] == "integer":
+            return (param_value - meta["min"]) / (meta["max"] - meta["min"])
+        if meta["type"] == "float":
+            return (
+                (float(param_value) - float(meta["min"]))
+                / (float(meta["max"]) - float(meta["min"]))
+            )
+        if meta["type"] == "enum":
+            return meta["enum_values"].index(param_value) / len(meta["enum_values"])
+
+        raise ValueError(f"Unsupported knob type: {meta['type']}")
+
+    def get_original(self, param_name, param_value):
+        meta = self._get_param_meta(param_name)
+
+        if meta["type"] == "integer":
+            return int(float(param_value) * (meta["max"] - meta["min"]) + meta["min"])
+        if meta["type"] == "float":
+            return (
+                float(param_value) * (float(meta["max"]) - float(meta["min"]))
+                + float(meta["min"])
+            )
+        if meta["type"] == "enum":
+            enum_size = len(meta["enum_values"])
+            enum_index = int(enum_size * float(param_value))
+            enum_index = min(enum_size - 1, enum_index)
+            return meta["enum_values"][enum_index]
+
+        raise ValueError(f"Unsupported knob type: {meta['type']}")
+
+    def set_normalized_param(self, params: list[float], apply = True) -> None:
         if len(params) != len(self.param_names):
             raise ValueError(
                 f"Parameter length mismatch: expected {len(self.param_names)}, got {len(params)}"
@@ -134,7 +179,10 @@ class VDBConfig:
         self.normalized_parameter = list(params)
         self.param_original()
 
-    def set_original_param(self, params: list[Any]) -> None:
+        if apply:
+            self.apply_params()
+
+    def set_original_param(self, params: list[Any], apply=True) -> None:
         if len(params) != len(self.param_names):
             raise ValueError(
                 f"Parameter length mismatch: expected {len(self.param_names)}, got {len(params)}"
@@ -158,6 +206,9 @@ class VDBConfig:
 
         self.current_params = list(params)
         self.param_normalized()
+
+        if apply:
+            self.apply_params()
 
     # split the original "*" style parameters into the key-value style
     def _set_nested_value(self, tree: dict[str, Any], path: str, value: Any) -> None:
@@ -251,4 +302,3 @@ if __name__ == "__main__":
         [default_params[name] for name in vdb_config.param_names]
     )
     vdb_config.apply_params()
-

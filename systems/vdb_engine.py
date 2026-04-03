@@ -188,7 +188,7 @@ class VDBEngine:
                     using="default",
                 )
             collection.load()
-            return time.perf_counter() - total_start
+            return  time.perf_counter() - total_start
         else:
             raise NotImplementedError(f"build is not implemented for {self.db_type}")
 
@@ -266,7 +266,8 @@ class VDBEngine:
                     gt = set(np.asarray(query_top100[i]).tolist()[:top_k])
                     recalls.append(len(ids.intersection(gt)) / top_k)
 
-            return time.perf_counter() - total_start, float(np.mean(recalls))
+            total_query_time = time.perf_counter() - total_start
+            return total_query_time, float(np.mean(recalls)), use_count
         else:
             raise NotImplementedError(f"query is not implemented for {self.db_type}")
 
@@ -290,12 +291,12 @@ if __name__=="__main__":
 
     vdbengine.start()
 
-    ts = vdbengine.build()
+    _, ts = vdbengine.build()
 
     print(f"Build finish in {ts}")
 
-    ts, recall = vdbengine.query(10, False, 100)
+    ts, recall, query_count = vdbengine.query(10, False, 100)
 
-    print(f"Search time {ts}, recall {recall}%")
+    print(f"Search time {ts}, recall {recall}%, query_count {query_count}")
 
     vdbengine.stop()
