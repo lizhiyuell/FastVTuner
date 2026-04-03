@@ -8,7 +8,7 @@ from typing import Any
 import shutil
 import json
 import numpy as np
-from common import *
+from systems.common import *
 import os
 import pymilvus
 
@@ -194,12 +194,12 @@ class VDBEngine:
 
     # one search step with search_vecs
     # test: whether use the search/test vectors
-    # ratio: how many percentage vecs are used
-    def query(self, top_k, test=False, ratio=100.0):
+    # ratio: how many query vecs are used, in (0, 1]
+    def query(self, top_k, test=False, ratio=1.0):
         if self.vec_dataset is None:
             raise RuntimeError("Dataset is not loaded")
-        if ratio <= 0 or ratio > 100:
-            raise ValueError("ratio must be in (0, 100]")
+        if ratio <= 0 or ratio > 1:
+            raise ValueError("ratio must be in (0, 1]")
         if top_k <= 0:
             raise ValueError("top_k must be positive")
 
@@ -222,7 +222,7 @@ class VDBEngine:
 
             query_vecs = self.vec_test if test else self.vec_search
             query_top100 = self.vec_test_top100 if test else self.vec_search_top100
-            use_count = max(1, int(len(query_vecs) * ratio / 100.0))
+            use_count = max(1, int(len(query_vecs) * ratio))
 
             vectors = np.asarray(query_vecs[:use_count], dtype=np.float32)
             if should_norm:
@@ -295,7 +295,7 @@ if __name__=="__main__":
 
     print(f"Build finish in {ts}")
 
-    ts, recall, query_count = vdbengine.query(10, False, 100)
+    ts, recall, query_count = vdbengine.query(10, False, 1.0)
 
     print(f"Search time {ts}, recall {recall}%, query_count {query_count}")
 

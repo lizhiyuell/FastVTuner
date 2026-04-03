@@ -6,7 +6,7 @@ from typing import Any
 
 import yaml
 
-from common import *
+from systems.common import *
 
 SUPPORTED_VDBS = {"milvus", "ex-milvus", "qudrant", "ex-qudrant"}
 

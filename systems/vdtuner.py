@@ -1,5 +1,11 @@
-from systems.base import SystemBase, TuningRecord
 import sys 
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[1]
+if str(PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(PROJECT_ROOT))
+
+from systems.base import SystemBase, TuningRecord
 import numpy as np
 import json
 import time
@@ -12,7 +18,7 @@ from botorch.models import SingleTaskGP
 from botorch.models.model_list_gp_regression import ModelListGP
 from botorch.acquisition import ExpectedImprovement, LogExpectedImprovement, ConstrainedExpectedImprovement
 from botorch.optim import optimize_acqf
-from botorch.fit import fit_gpytorch_model
+from botorch.fit import fit_gpytorch_mll
 from gpytorch.mlls.sum_marginal_log_likelihood import SumMarginalLogLikelihood
 from gpytorch.mlls import ExactMarginalLogLikelihood
 from botorch.models.transforms.outcome import Standardize
@@ -176,7 +182,7 @@ class EHVIBO:
             
         self.model = ModelListGP(*models)
         self.mll = SumMarginalLogLikelihood(self.model.likelihood, self.model)
-        fit_gpytorch_model(self.mll)
+        fit_gpytorch_mll(self.mll)
 
 
 # The implementation of the VDTunerSystem
@@ -233,7 +239,7 @@ class VDTunerSystem(SystemBase):
         # the original init_sample function
         for k in self.remain_types:
             # get the default configurations, but change the index into target one
-            param_original = self.vdb_config.get_original()
+            param_original = self.vdb_config.get_original_param()
             # change the index type
             index_pos = self.vdb_config.get_param_index("index_type")
             param_original[index_pos] = k
@@ -241,8 +247,10 @@ class VDTunerSystem(SystemBase):
             self.vdb_config.set_original_param(param_original)
 
             # run the exp with default configurations
+            self.vdb_engine.start()
             res_record = self.single_tune()
             self.single_test()
+            self.vdb_engine.stop()
 
             self.X[k].append(param_original)
             self.Y[k].append([
@@ -260,8 +268,10 @@ class VDTunerSystem(SystemBase):
         polling_k, new_x = self.rr_polling()
 
         self.vdb_config.set_normalized_param(new_x)
+        self.vdb_engine.start()
         res_record = self.single_tune()
         self.single_test()
+        self.vdb_engine.stop()
 
         self.X[polling_k].append(self.vdb_config.get_normalized_param())
         self.Y[polling_k].append([
@@ -408,12 +418,9 @@ def main():
         vdb_name="milvus",
         dataset_name="gist-p-10",
     )
-    system.vdb_engine.start()
-    try:
-        for i in range(10):
-            system.step()
-    finally:
-        system.vdb_engine.stop()
+    
+    for i in range(10):
+        system.step()
 
 
 if __name__ == "__main__":

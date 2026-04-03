@@ -11,7 +11,7 @@ from typing import Any, Literal
 from systems.vdb_config import VDBConfig
 from systems.vdb_engine import VDBEngine
 
-from common import *
+from systems.common import *
 
 Phase = Literal["tune", "test"]
 
@@ -65,16 +65,24 @@ class SystemBase(ABC):
         workload_name = Path(getattr(sys.modules.get("__main__"), "__file__", "interactive")).stem
         log_dir = RESULT_ROOT / workload_name / self.vdb_name
         log_dir.mkdir(parents=True, exist_ok=True)
-        self._log_path = log_dir / f"{self.dataset_name}.txt"
-        self._log_file = self._log_path.open("w", encoding="utf-8")
+        self._log_paths = {
+            "tune": log_dir / f"{self.dataset_name}_tune.txt",
+            "test": log_dir / f"{self.dataset_name}_test.txt",
+        }
+        self._log_files = {
+            phase: path.open("w", encoding="utf-8")
+            for phase, path in self._log_paths.items()
+        }
 
         self.set_top_k(top_k)
 
     def __del__(self) -> None:
         try:
-            log_file = getattr(self, "_log_file", None)
-            if log_file is not None and not log_file.closed:
-                log_file.close()
+            log_files = getattr(self, "_log_files", None)
+            if log_files is not None:
+                for log_file in log_files.values():
+                    if log_file is not None and not log_file.closed:
+                        log_file.close()
         except Exception:
             pass
 
@@ -113,9 +121,10 @@ class SystemBase(ABC):
         self._require_dataset()
         record = runner()
         self._append_record(record, expected_phase=phase)
-        self._log_file.write(json.dumps(record.to_dict(), ensure_ascii=False))
-        self._log_file.write("\n")
-        self._log_file.flush()
+        log_file = self._log_files[phase]
+        log_file.write(json.dumps(record.to_dict(), ensure_ascii=False))
+        log_file.write("\n")
+        log_file.flush()
         return record
 
     # 校验记录合法性，并维护统一递增的 step_id 与历史列表。
