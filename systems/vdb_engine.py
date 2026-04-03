@@ -14,6 +14,7 @@ import pymilvus
 
 env = os.environ.copy()
 env["DOCKER_VOLUME_DIRECTORY"] = DOCKER_VOLUME_DIR
+DEVNULL = sp.DEVNULL
 
 
 SERVER_PATH_MAP = {
@@ -77,8 +78,20 @@ class VDBEngine:
 
         # 2. start the container
         # stop the previous one
-        sp.run(["docker", "compose", "down"], cwd=self.server_path, env=env)
-        sp.run(["docker", "compose", "up", "-d"], cwd=self.server_path, env=env)
+        sp.run(
+            ["docker", "compose", "down"],
+            cwd=self.server_path,
+            env=env,
+            stdout=DEVNULL,
+            stderr=DEVNULL,
+        )
+        sp.run(
+            ["docker", "compose", "up", "-d"],
+            cwd=self.server_path,
+            env=env,
+            stdout=DEVNULL,
+            stderr=DEVNULL,
+        )
 
         # 3. wait for connection built
         while True:
@@ -88,12 +101,18 @@ class VDBEngine:
             except (error.URLError, error.HTTPError):
                 time.sleep(1)
 
-        print("[VDB] VDB started")
+        # print("[VDB] VDB started")
 
     def stop(self) -> None:
-        sp.run(["docker", "compose", "down"], cwd=self.server_path, env=env)
+        sp.run(
+            ["docker", "compose", "down"],
+            cwd=self.server_path,
+            env=env,
+            stdout=DEVNULL,
+            stderr=DEVNULL,
+        )
 
-        print("[VDB] VDB ended")
+        # print("[VDB] VDB ended")
 
     def _load_current_config(self):
         with CURRENT_CONFIG_PATH.open("r", encoding="utf-8") as f:

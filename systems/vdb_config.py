@@ -36,8 +36,6 @@ class VDBConfig:
 
         # parsing the parameter information
         self.param_names = list(meta_config.keys())
-        # default values in the same order as param_names
-        self.default_config = []
         # save the normalized paramters between [0, 1]
         self.normalized_parameter = []
         # unormalized parameters
@@ -49,8 +47,6 @@ class VDBConfig:
         for param_name in self.param_names:
             detail = meta_config[param_name]
 
-            # load the default parameters
-            self.default_config.append(detail["default"])
             self.current_params.append(detail["default"])
 
             knob_type = detail["type"]
@@ -76,6 +72,9 @@ class VDBConfig:
             self.param_meta.append(meta)
 
         self.param_normalized()
+
+        # default values of the normalized parameters
+        self.default_config = self.get_normalized_param()
 
     def param_normalized(self) -> None:
         self.normalized_parameter = []

@@ -26,8 +26,8 @@ from botorch.sampling.normal import SobolQMCNormalSampler
 from botorch.utils.multi_objective.box_decompositions.non_dominated import (
     FastNondominatedPartitioning,
 )
-from botorch.acquisition.multi_objective.monte_carlo import (
-    qExpectedHypervolumeImprovement,
+from botorch.acquisition.multi_objective.logei import (
+    qLogExpectedHypervolumeImprovement,
 )
 from gpytorch.kernels.scale_kernel import ScaleKernel
 from gpytorch.kernels.matern_kernel import MaternKernel
@@ -146,7 +146,7 @@ class EHVIBO:
 
         partitioning = FastNondominatedPartitioning(ref_point=REF_POINT, Y=pred,)
         
-        acq_func = qExpectedHypervolumeImprovement(
+        acq_func = qLogExpectedHypervolumeImprovement(
             model=self.model,
             ref_point=REF_POINT,
             partitioning=partitioning,
@@ -222,8 +222,8 @@ class VDTunerSystem(SystemBase):
             'SCANN': [1,2,8],
         }
 
-        self.X = dict.fromkeys(self.polling_index.keys(), [])
-        self.Y = dict.fromkeys(self.polling_index.keys(), [])
+        self.X = {key: [] for key in self.polling_index.keys()}
+        self.Y = {key: [] for key in self.polling_index.keys()}
 
         self.remain_types = list(self.polling_index.keys())
         self.polling_round_num = 0
@@ -251,7 +251,7 @@ class VDTunerSystem(SystemBase):
             self.single_test()
             self.vdb_engine.stop()
 
-            self.X[k].append(param_original)
+            self.X[k].append(self.vdb_config.get_normalized_param())
             self.Y[k].append([
                 res_record.query_throughput,
                 res_record.recall,
@@ -266,7 +266,8 @@ class VDTunerSystem(SystemBase):
 
         polling_k, new_x = self.rr_polling()
 
-        self.vdb_config.set_normalized_param(new_x)
+        # the new_x is an array of parameter array, we detach it
+        self.vdb_config.set_normalized_param(new_x[0])
         self.vdb_engine.start()
         res_record = self.single_tune()
         self.single_test()
@@ -385,7 +386,6 @@ class VDTunerSystem(SystemBase):
         )
 
     def _single_test_impl(self):
-
         query_time, recall, query_count = self.vdb_engine.query(
             self._top_k,
             test=True,
@@ -418,7 +418,7 @@ def main():
         dataset_name="gist-p-10",
     )
     
-    for i in range(10):
+    for i in range(150):
         system.step()
 
 
