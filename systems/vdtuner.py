@@ -220,7 +220,6 @@ class VDTunerSystem(SystemBase):
             'IVF_PQ': [1,2,3,4],
             'HNSW': [5,6,7],
             'SCANN': [1,2,8],
-            'AUTOINDEX': [],
         }
 
         self.X = dict.fromkeys(self.polling_index.keys(), [])
@@ -241,7 +240,7 @@ class VDTunerSystem(SystemBase):
             # get the default configurations, but change the index into target one
             param_original = self.vdb_config.get_original_param()
             # change the index type
-            index_pos = self.vdb_config.get_param_index("index_type")
+            index_pos = self.vdb_config.get_param_index(index_type_name)
             param_original[index_pos] = k
 
             self.vdb_config.set_original_param(param_original)

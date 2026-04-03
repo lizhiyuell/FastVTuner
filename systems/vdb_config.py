@@ -222,17 +222,7 @@ class VDBConfig:
             node = node[key]
         node[keys[-1]] = value
 
-    def _split_current_params(self) -> tuple[dict[str, Any], dict[str, Any]]:
-        index_conf: dict[str, Any] = {}
-        system_conf: dict[str, Any] = {}
-        for meta, value in zip(self.param_meta, self.current_params):
-            if meta["class"] == "system":
-                system_conf[meta["name"]] = value
-            else:
-                index_conf[meta["name"]] = value
-        return index_conf, system_conf
-
-    def _milvus_apply_index_config(self, index_conf: dict[str, Any]) -> None:
+    def _milvus_apply_index_config(self) -> None:
         index_type = None
         building_params: dict[str, Any] = {}
         searching_params: dict[str, Any] = {}
@@ -266,22 +256,21 @@ class VDBConfig:
         with self.config_current_path.open("w", encoding="utf-8") as f:
             json.dump(config, f, ensure_ascii=False, indent=2)
 
-    def _milvus_apply_system_config(self, system_conf: dict[str, Any]) -> None:
+    def _milvus_apply_system_config(self) -> None:
         with self.config_system_path.open("r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
 
-        for key, value in system_conf.items():
-            self._set_nested_value(config, key, value)
+        for meta, value in zip(self.param_meta, self.current_params):
+            if meta["class"] == "system":
+                self._set_nested_value(config, meta["name"], value)
 
         with self.config_system_path.open("w", encoding="utf-8") as f:
             yaml.safe_dump(config, f, sort_keys=False)
 
     def apply_params(self) -> None:
         if self.vdb_name == "milvus":
-            # split the parameters into index paramters and system paramters
-            index_conf, system_conf = self._split_current_params()
-            self._milvus_apply_index_config(index_conf)
-            self._milvus_apply_system_config(system_conf)
+            self._milvus_apply_index_config()
+            self._milvus_apply_system_config()
         else:
             raise NotImplementedError(f"{self.vdb_name} config is not implemented yet")
 

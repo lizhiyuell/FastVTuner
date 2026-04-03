@@ -2,15 +2,14 @@
   "index_type": {
     "class": "type",
     "type": "enum",
-    "default": "AUTOINDEX",
+    "default": "FLAT",
     "enum_values": [
       "FLAT",
       "IVF_FLAT",
       "IVF_SQ8",
       "IVF_PQ",
       "HNSW",
-      "SCANN",
-      "AUTOINDEX"
+      "SCANN"
     ]
   },
   "nlist": {
