@@ -55,8 +55,6 @@ class SystemBase(ABC):
             single_tune_query_ratio=single_tune_query_ratio,
             single_test_query_ratio=single_test_query_ratio,
         )
-        self.set_top_k(10)
-
         self.dataset_name = dataset_name
         self.vdb_engine.load_dataset(dataset_name)
         self._history: list[TuningRecord] = []
