@@ -7,7 +7,7 @@
   "search_params": {
     "parallel": 1,
     "config": {
-      "nprobe": 15,
+      "nprobe": 19,
       "ef": 500,
       "reorder_k": 500
     }
@@ -15,9 +15,9 @@
   "upload_params": {
     "parallel": 1,
     "index_params": {
-      "nlist": 97,
-      "m": 5,
-      "nbits": 7,
+      "nlist": 1455,
+      "m": 25,
+      "nbits": 8,
       "M": 32,
       "efConstruction": 256
     }

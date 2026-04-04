@@ -15,7 +15,8 @@ CURRENT_CONFIG_PATH = CONFIG_ROOT / "current.json"
 class VDBConfig:
     def __init__(
         self,
-        vdb_name: str
+        vdb_name: str,
+        dimension : int # maybe we should update the config with m
     ) -> None:
         if vdb_name not in SUPPORTED_VDBS:
             raise ValueError(f"Unsupported vdb_name: {vdb_name}")
@@ -26,6 +27,9 @@ class VDBConfig:
         self.config_template_path = CONFIG_ROOT / f"{vdb_name}.json"
         self.config_current_path = CURRENT_CONFIG_PATH
         
+        if vdb_name=="milvus":
+            update_m_with_dimension(self.config_template_path, dimension)
+
         # set the system parameter for the milvus
         if "milvus" in vdb_name:
             self.config_system_path = DOCKER_CONFIG_ROOT / "milvus" / "milvus.yaml"

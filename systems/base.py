@@ -48,7 +48,6 @@ class SystemBase(ABC):
     ) -> None:
         self.seed = 42
         self.vdb_name = vdb_name
-        self.vdb_config = VDBConfig(vdb_name)
         self.vdb_engine = VDBEngine(vdb_name)
 
         self._set_query_ratios(
@@ -57,6 +56,10 @@ class SystemBase(ABC):
         )
         self.dataset_name = dataset_name
         self.vdb_engine.load_dataset(dataset_name)
+
+        # we need to build the config with dimension
+        self.vdb_config = VDBConfig(vdb_name, self.vdb_engine.dimension)
+
         self._history: list[TuningRecord] = []
         self._step_id = 0
         self._rng = Random(self.seed)
