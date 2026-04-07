@@ -229,6 +229,7 @@ class VDBConfig:
         index_type = None
         building_params: dict[str, Any] = {}
         searching_params: dict[str, Any] = {}
+        parallel = get_physical_cpu_count()
         for meta, value in zip(self.param_meta, self.current_params):
             if meta["class"] == "type":
                 index_type = value
@@ -247,11 +248,11 @@ class VDBConfig:
             "connection_params": {},
             "collection_params": {},
             "search_params": {
-                "parallel": 1,
+                "parallel": parallel,
                 "config": dict(searching_params),
             },
             "upload_params": {
-                "parallel": 1,
+                "parallel": parallel,
                 "index_params": dict(building_params),
             },
         }

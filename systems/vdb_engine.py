@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 from concurrent.futures import ThreadPoolExecutor
+import multiprocessing as mp
 import subprocess as sp
 import time
 from urllib import error, request
@@ -23,8 +24,27 @@ SERVER_PATH_MAP = {
 }
 
 COLLECTION_NAME = "tuning_benchmark"
-BATCH_SIZE = 1024
+BATCH_SIZE = 64
 CURRENT_CONFIG_PATH = CONFIG_ROOT / "current.json"
+_BUILD_COLLECTION = None
+
+
+def _get_mp_start_method():
+    if "forkserver" in mp.get_all_start_methods():
+        return "forkserver"
+    return "spawn"
+
+
+def _init_milvus_build_worker():
+    global _BUILD_COLLECTION
+    pymilvus.connections.connect(alias="default", host="localhost", port="19530")
+    _BUILD_COLLECTION = pymilvus.Collection(COLLECTION_NAME, using="default")
+
+
+def _insert_milvus_batch(batch):
+    start, batch_vectors = batch
+    end = start + len(batch_vectors)
+    _BUILD_COLLECTION.insert([list(range(start, end)), batch_vectors])
 
 class VDBEngine:
     def __init__(
@@ -178,18 +198,16 @@ class VDBEngine:
                     end = min(start + batch_size, len(vectors))
                     collection.insert([list(range(start, end)), vectors[start:end].tolist()])
             else:
-                with ThreadPoolExecutor(max_workers=int(parallel)) as executor:
-                    list(
-                        executor.map(
-                            lambda start: collection.insert(
-                                [
-                                    list(range(start, min(start + batch_size, len(vectors)))),
-                                    vectors[start : start + batch_size].tolist(),
-                                ]
-                            ),
-                            range(0, len(vectors), batch_size),
-                        )
-                    )
+                ctx = mp.get_context(_get_mp_start_method())
+                batches = (
+                    (start, vectors[start : start + batch_size].tolist())
+                    for start in range(0, len(vectors), batch_size)
+                )
+                with ctx.Pool(
+                    processes=int(parallel),
+                    initializer=_init_milvus_build_worker,
+                ) as pool:
+                    list(pool.imap(_insert_milvus_batch, batches))
 
             collection.flush()
             collection.create_index(
@@ -303,7 +321,8 @@ class VDBEngine:
 
 if __name__=="__main__":
     
-    dataset_name = "gist-p-10"
+    # dataset_name = "gist-p-10"
+    dataset_name = "gist"
 
     vdbengine = VDBEngine("milvus")
     vdbengine.load_dataset(dataset_name)

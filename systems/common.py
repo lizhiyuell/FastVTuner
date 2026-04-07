@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import json
+import os
 from pathlib import Path
 from scipy.stats import qmc
 
@@ -13,6 +14,41 @@ CONFIG_ROOT = PROJECT_ROOT / "config"
 RESULT_ROOT = PROJECT_ROOT / "results"
 DOCKER_CONFIG_ROOT = PROJECT_ROOT / "docker_config"
 DOCKER_VOLUME_DIR = Path("/extend/volume")
+
+
+def get_physical_cpu_count():
+    cpuinfo_path = Path("/proc/cpuinfo")
+    if cpuinfo_path.exists():
+        physical_cores = set()
+        physical_id = None
+        core_id = None
+
+        with cpuinfo_path.open("r", encoding="utf-8") as f:
+            for raw_line in f:
+                line = raw_line.strip()
+                if not line:
+                    if physical_id is not None and core_id is not None:
+                        physical_cores.add((physical_id, core_id))
+                    physical_id = None
+                    core_id = None
+                    continue
+
+                if ":" not in line:
+                    continue
+
+                key, value = [part.strip() for part in line.split(":", 1)]
+                if key == "physical id":
+                    physical_id = value
+                elif key == "core id":
+                    core_id = value
+
+            if physical_id is not None and core_id is not None:
+                physical_cores.add((physical_id, core_id))
+
+        if physical_cores:
+            return len(physical_cores)
+
+    return os.cpu_count() or 1
 
 
 # specially designed for Milvus

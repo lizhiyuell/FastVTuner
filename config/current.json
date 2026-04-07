@@ -5,18 +5,18 @@
   "connection_params": {},
   "collection_params": {},
   "search_params": {
-    "parallel": 1,
+    "parallel": 20,
     "config": {
-      "nprobe": 19,
+      "nprobe": 21,
       "ef": 500,
       "reorder_k": 500
     }
   },
   "upload_params": {
-    "parallel": 1,
+    "parallel": 20,
     "index_params": {
-      "nlist": 1455,
-      "m": 25,
+      "nlist": 5460,
+      "m": 8,
       "nbits": 8,
       "M": 32,
       "efConstruction": 256
