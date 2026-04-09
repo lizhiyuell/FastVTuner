@@ -29,7 +29,7 @@
   "m": {
     "class": "building",
     "type": "enum",
-    "default": 10,
+    "default": 120,
     "enum_values": [
       1,
       2,

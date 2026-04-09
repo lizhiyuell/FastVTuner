@@ -12,6 +12,14 @@ SUPPORTED_VDBS = {"milvus", "ex-milvus", "qudrant", "ex-qudrant"}
 
 CURRENT_CONFIG_PATH = CONFIG_ROOT / "current.json"
 
+
+yaml.SafeDumper.add_representer(
+    float,
+    lambda dumper, value: dumper.represent_scalar(
+        "tag:yaml.org,2002:float", f"{value:.2f}"
+    ),
+)
+
 class VDBConfig:
     def __init__(
         self,

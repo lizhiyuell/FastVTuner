@@ -1,21 +1,25 @@
 {
   "name": "tuning-config",
   "engine": "milvus",
-  "index": "IVF_PQ",
+  "index": "FLAT",
   "connection_params": {},
   "collection_params": {},
   "search_params": {
     "parallel": 20,
     "config": {
-      "nprobe": 10
+      "nprobe": 8,
+      "ef": 500,
+      "reorder_k": 500
     }
   },
   "upload_params": {
     "parallel": 20,
     "index_params": {
-      "nlist": 10,
-      "m": 60,
-      "nbits": 8
+      "nlist": 128,
+      "m": 120,
+      "nbits": 8,
+      "M": 32,
+      "efConstruction": 256
     }
   }
 }

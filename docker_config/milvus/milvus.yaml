@@ -7,8 +7,8 @@ common:
     BuildNumThreadsRatio: 1
     LoadNumThreadRatio: 8
     MaxDegree: 56
-    PQCodeBudgetGBRatio: 0.125
-    SearchCacheBudgetGBRatio: 0.1
+    PQCodeBudgetGBRatio: 0.12
+    SearchCacheBudgetGBRatio: 0.10
     SearchListSize: 100
   ImportMaxFileSize: 17179869184
   chanNamePrefix:
@@ -90,10 +90,10 @@ dataCoord:
     maxBinlogFileNumber: 32
     maxIdleTime: 600
     maxLife: 86400
-    maxSize: 474
+    maxSize: 512
     minSizeFromIdleToSealed: 16
-    sealProportion: 0.5365897393226624
-    smallProportion: 0.5
+    sealProportion: 0.23
+    smallProportion: 0.50
 dataNode:
   dataSync:
     flowGraph:
@@ -108,8 +108,8 @@ dataNode:
   memory:
     forceSyncEnable: true
     forceSyncSegmentNum: 1
-    watermarkCluster: 0.5
-    watermarkStandalone: 0.2
+    watermarkCluster: 0.50
+    watermarkStandalone: 0.20
   port: 21124
   segment:
     deleteBufBytes: 67108864
@@ -132,15 +132,15 @@ etcd:
     tlsCACert: /path/to/ca.pem
     tlsCert: /path/to/etcd-client.pem
     tlsKey: /path/to/etcd-client-key.pem
-    tlsMinVersion: 1.3
+    tlsMinVersion: 1.30
   use:
     embed: false
 grpc:
   client:
-    backoffMultiplier: 2.0
+    backoffMultiplier: 2.00
     compressionEnabled: false
     dialTimeout: 200
-    initialBackOff: 0.2
+    initialBackOff: 0.20
     keepAliveTime: 10000
     keepAliveTimeout: 20000
     maxBackoff: 10
@@ -261,7 +261,7 @@ queryCoord:
   checkInterval: 1000
   distPullInterval: 500
   enableActiveStandby: false
-  globalRowCountFactor: 0.1
+  globalRowCountFactor: 0.10
   grpc:
     clientMaxRecvSize: 268435456
     clientMaxSendSize: 268435456
@@ -272,7 +272,7 @@ queryCoord:
   memoryUsageMaxDifferencePercentage: 30
   overloadedMemoryThresholdPercentage: 90
   port: 19531
-  reverseUnBalanceTolerationFactor: 1.3
+  reverseUnBalanceTolerationFactor: 1.30
   scoreUnbalanceTolerationFactor: 0.05
   segmentTaskTimeout: 120000
   taskExecutionCap: 256
@@ -311,7 +311,7 @@ queryNode:
       taskQueueExpire: 60
     unsolvedQueueSize: 10240
   segcore:
-    cgoPoolSizeRatio: 2.0
+    cgoPoolSizeRatio: 2.00
     chunkRows: 1024
     growing:
       enableIndex: true
@@ -364,7 +364,7 @@ quotaAndLimits:
     enabled: false
     max: -1
   limitReading:
-    coolOffSpeed: 0.9
+    coolOffSpeed: 0.90
     forceDeny: false
     queueProtection:
       enabled: false
@@ -381,9 +381,9 @@ quotaAndLimits:
     forceDeny: false
     growingSegmentsSizeProtection:
       enabled: false
-      highWaterLevel: 0.4
-      lowWaterLevel: 0.2
-      minRateRatio: 0.5
+      highWaterLevel: 0.40
+      lowWaterLevel: 0.20
+      minRateRatio: 0.50
     memProtection:
       dataNodeMemoryHighWaterLevel: 0.95
       dataNodeMemoryLowWaterLevel: 0.85
