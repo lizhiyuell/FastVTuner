@@ -1,0 +1,15 @@
+dataset: gist.npz
+dimension: 960
+distance_metric: euclidean
+train_size: 1000000
+search_size: 500
+test_size: 500
+total_size: 1001000
+
+dataset: glove.npz
+dimension: 100
+distance_metric: angular
+train_size: 1183514
+search_size: 5000
+test_size: 5000
+total_size: 1193514

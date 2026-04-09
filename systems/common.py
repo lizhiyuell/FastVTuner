@@ -15,41 +15,8 @@ RESULT_ROOT = PROJECT_ROOT / "results"
 DOCKER_CONFIG_ROOT = PROJECT_ROOT / "docker_config"
 DOCKER_VOLUME_DIR = Path("/extend/volume")
 
-
-def get_physical_cpu_count():
-    cpuinfo_path = Path("/proc/cpuinfo")
-    if cpuinfo_path.exists():
-        physical_cores = set()
-        physical_id = None
-        core_id = None
-
-        with cpuinfo_path.open("r", encoding="utf-8") as f:
-            for raw_line in f:
-                line = raw_line.strip()
-                if not line:
-                    if physical_id is not None and core_id is not None:
-                        physical_cores.add((physical_id, core_id))
-                    physical_id = None
-                    core_id = None
-                    continue
-
-                if ":" not in line:
-                    continue
-
-                key, value = [part.strip() for part in line.split(":", 1)]
-                if key == "physical id":
-                    physical_id = value
-                elif key == "core id":
-                    core_id = value
-
-            if physical_id is not None and core_id is not None:
-                physical_cores.add((physical_id, core_id))
-
-        if physical_cores:
-            return len(physical_cores)
-
-    return os.cpu_count() or 1
-
+BUILD_PARALLEL = 20
+SEARCH_PARALLEL = 20
 
 # specially designed for Milvus
 def update_m_with_dimension(config_template_path, dimension):
@@ -60,14 +27,16 @@ def update_m_with_dimension(config_template_path, dimension):
             factors.append(i)
     factors.sort()
 
-    # 2. find the one that is nearest to '10' as the default value
-    default_value = min(factors, key=lambda x: abs(x - 10))
+    lower_bound = (dimension + 7) // 8
+    default_candidates = [factor for factor in factors if factor >= lower_bound]
+    if not default_candidates:
+        raise ValueError(f"Cannot find valid m >= {lower_bound} for dimension={dimension}")
 
-    # 3. read the index_param.json and whole_param.json, updating m.default and m.enum_values
+    # 2. read the index_param.json and whole_param.json, updating m.default and m.enum_values
     with open(config_template_path, "r", encoding="utf-8") as f:
         data = json.load(f)
 
-    data["m"]["default"] = default_value
+    data["m"]["default"] = int(default_candidates[0])
     data["m"]["enum_values"] = factors
 
     with open(config_template_path, "w", encoding="utf-8") as f:

@@ -122,15 +122,15 @@ def main() -> None:
     with PERF_OUTPUT_FILE.open("w", encoding="utf-8") as perf_writer:
         perf_writer.write(
             f"# dataset={DATASET_NAME}\ttune_query_ratio={TUNE_QUERY_RATIO}"
-            f"\ttest_query_ratio={TEST_QUERY_RATIO}\ttune_steps=1\n"
+            f"\ttest_query_ratio={TEST_QUERY_RATIO}\ttune_steps=1\tparallel={record.parallel}\n"
         )
         perf_writer.write(
             "dataset\ttune_query_ratio\ttest_query_ratio\ttune_step\t"
-            "index_build_time\ttuning_query_time\ttuning_qps\ttuning_recall\t"
+            "parallel\tindex_build_time\ttuning_query_time\ttuning_qps\ttuning_recall\t"
             "testing_query_time\ttesting_qps\ttesting_recall\n"
         )
         perf_writer.write(
-            f"{DATASET_NAME}\t{TUNE_QUERY_RATIO:.2f}\t{TEST_QUERY_RATIO:.2f}\t1\t"
+            f"{DATASET_NAME}\t{TUNE_QUERY_RATIO:.2f}\t{TEST_QUERY_RATIO:.2f}\t1\t{record.parallel}\t"
             f"{float(record.index_time):.6f}\t0.000000\t0.000000\t0.000000\t"
             f"{testing_query_time:.6f}\t{testing_qps:.6f}\t{testing_recall:.6f}\n"
         )
@@ -138,14 +138,14 @@ def main() -> None:
     with PARAM_OUTPUT_FILE.open("w", encoding="utf-8") as param_writer:
         param_writer.write(
             f"# dataset={DATASET_NAME}\ttune_query_ratio={TUNE_QUERY_RATIO}"
-            f"\ttest_query_ratio={TEST_QUERY_RATIO}\ttune_steps=1\n"
+            f"\ttest_query_ratio={TEST_QUERY_RATIO}\ttune_steps=1\tparallel={record.parallel}\n"
         )
         param_writer.write(
             "dataset\ttune_query_ratio\ttest_query_ratio\ttune_step\t"
-            "index_params...\tsystem_params...\n"
+            "parallel\tindex_params...\tsystem_params...\n"
         )
         param_writer.write(
-            f"{DATASET_NAME}\t{TUNE_QUERY_RATIO:.2f}\t{TEST_QUERY_RATIO:.2f}\t1"
+            f"{DATASET_NAME}\t{TUNE_QUERY_RATIO:.2f}\t{TEST_QUERY_RATIO:.2f}\t1\t{record.parallel}"
         )
         if index_params:
             param_writer.write(f"\t{_format_param_items(index_params)}")

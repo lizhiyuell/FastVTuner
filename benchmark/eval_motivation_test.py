@@ -40,12 +40,12 @@ PERF_OUTPUT_FILE = OUTPUT_DIR / f"{SYSTEM_NAME}_{VDB_NAME}_perf.txt"
 PARAM_OUTPUT_FILE = OUTPUT_DIR / f"{SYSTEM_NAME}_{VDB_NAME}_param.txt"
 PERF_HEADER = (
     "dataset\ttune_query_ratio\ttest_query_ratio\ttune_step\t"
-    "index_build_time\ttuning_query_time\ttuning_qps\ttuning_recall\t"
+    "parallel\tindex_build_time\ttuning_query_time\ttuning_qps\ttuning_recall\t"
     "testing_query_time\ttesting_qps\ttesting_recall\n"
 )
 PARAM_HEADER = (
     "dataset\ttune_query_ratio\ttest_query_ratio\ttune_step\t"
-    "index_params...\tsystem_params...\n"
+    "parallel\tindex_params...\tsystem_params...\n"
 )
 
 
@@ -80,6 +80,7 @@ def _emit_row(dataset_name: str, test_ratio: float, step_idx: int, tune_record, 
     testing_qps = _qps(test_record)
     perf_writer.write(
         f"{dataset_name}\t{TUNE_QUERY_RATIO:.2f}\t{test_ratio:.2f}\t{step_idx}\t"
+        f"{tune_record.parallel}\t"
         f"{float(tune_record.index_time):.6f}\t{tuning_query_time:.6f}\t{tuning_qps:.6f}\t"
         f"{float(tune_record.recall):.6f}\t{testing_query_time:.6f}\t{testing_qps:.6f}\t"
         f"{float(test_record.recall):.6f}\n"
@@ -95,7 +96,7 @@ def _emit_row(dataset_name: str, test_ratio: float, step_idx: int, tune_record, 
         if part
     ]
     param_writer.write(
-        f"{dataset_name}\t{TUNE_QUERY_RATIO:.2f}\t{test_ratio:.2f}\t{step_idx}"
+        f"{dataset_name}\t{TUNE_QUERY_RATIO:.2f}\t{test_ratio:.2f}\t{step_idx}\t{tune_record.parallel}"
         f"{''.join(f'\t{part}' for part in param_items)}\n"
     )
     param_writer.flush()

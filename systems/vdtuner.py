@@ -6,6 +6,7 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from systems.base import SystemBase, TuningRecord
+from common import *
 import numpy as np
 import json
 import time
@@ -358,6 +359,7 @@ class VDTunerSystem(SystemBase):
 
     def _single_tune_impl(self):
         self._step_id = self._step_id + 1
+        print(f"[VDTuner] round {self._step_id}: start build", flush=True)
         build_time = self.vdb_engine.build()
         query_time, recall, query_count = self.vdb_engine.query(
             self._top_k,
@@ -371,6 +373,8 @@ class VDTunerSystem(SystemBase):
             step_id=self._step_id,
             phase="tune",
             dataset_name=self.dataset_name,
+            build_parallel=BUILD_PARALLEL,
+            search_parallel=SEARCH_PARALLEL,
             params=dict(
                 zip(
                     self.vdb_config.param_names,
@@ -386,6 +390,7 @@ class VDTunerSystem(SystemBase):
         )
 
     def _single_test_impl(self):
+        print(f"[VDTuner] round {self._step_id}: start test", flush=True)
         query_time, recall, query_count = self.vdb_engine.query(
             self._top_k,
             test=True,
@@ -398,6 +403,8 @@ class VDTunerSystem(SystemBase):
             step_id=self._step_id,
             phase="test",
             dataset_name=self.dataset_name,
+            build_parallel=BUILD_PARALLEL,
+            search_parallel=SEARCH_PARALLEL,
             params=dict(
                 zip(
                     self.vdb_config.param_names,

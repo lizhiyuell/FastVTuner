@@ -9,7 +9,7 @@ from typing import Any
 import shutil
 import json
 import numpy as np
-from systems.common import *
+from common import *
 import os
 import pymilvus
 
@@ -329,7 +329,7 @@ if __name__=="__main__":
 
     vdbengine.start()
 
-    _, ts = vdbengine.build()
+    ts = vdbengine.build()
 
     print(f"Build finish in {ts}")
 

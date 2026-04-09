@@ -22,6 +22,8 @@ class TuningRecord:
     step_id: int # 步骤ID
     phase: Phase # tune/test的结果
     dataset_name: str # 调优数据集名称
+    build_parallel: int # 索引构建的并发数
+    search_parallel: int # 索引检索的并发数
     params: dict[str, Any] # 数据集构造/搜索参数列表
     index_time: float # 总索引构建时间
     query_time: float # 本轮所有查询的总耗时
