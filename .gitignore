@@ -1,2 +1,4 @@
 datasets/
 __pycache__/
+vector-db-benchmark/
+.vscode/

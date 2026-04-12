@@ -46,3 +46,17 @@ def LHS_sample(dimension, num_points, seed):
     sampler = qmc.LatinHypercube(d=dimension, seed=seed)
     latin_samples = sampler.random(n=num_points)
     return latin_samples
+
+# Given a previous result file, load the configuration (dict) and return as a list
+def load_result_config(result_file_path):
+    configs = []
+    with open(result_file_path, "r", encoding="utf-8") as f:
+        for line in f:
+            line = line.strip()
+            if not line:
+                continue
+            data = json.loads(line)
+            params = data.get("params")
+            if params is not None:
+                configs.append(params)
+    return configs

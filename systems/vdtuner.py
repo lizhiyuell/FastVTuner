@@ -194,8 +194,8 @@ class VDTunerSystem(SystemBase):
         vdb_name,
         dataset_name,
         top_k = 10,
-        single_tune_query_ratio=0.5,
-        single_test_query_ratio=0.5,
+        single_tune_query_ratio=1.0,
+        single_test_query_ratio=1.0,
         seed=1206
     ):
         super().__init__(
