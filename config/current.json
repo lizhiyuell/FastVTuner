@@ -1,14 +1,14 @@
 {
   "name": "tuning-config",
   "engine": "milvus",
-  "index": "FLAT",
+  "index": "HNSW",
   "connection_params": {},
   "collection_params": {},
   "search_params": {
     "parallel": 20,
     "config": {
-      "nprobe": 8,
-      "ef": 500,
+      "nprobe": 7,
+      "ef": 10,
       "reorder_k": 500
     }
   },
@@ -18,8 +18,8 @@
       "nlist": 128,
       "m": 120,
       "nbits": 8,
-      "M": 32,
-      "efConstruction": 256
+      "M": 26,
+      "efConstruction": 512
     }
   }
 }

@@ -422,7 +422,7 @@ class VDTunerSystem(SystemBase):
 def main():
     system = VDTunerSystem(
         vdb_name="milvus",
-        dataset_name="gist",
+        dataset_name="gist-p-10",
     )
     
     for i in range(150):
