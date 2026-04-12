@@ -100,9 +100,8 @@ class SystemBase(ABC):
         single_tune_query_ratio: float,
         single_test_query_ratio: float,
     ) -> None:
-        assert 0 < single_tune_query_ratio < 1
-        assert 0 < single_test_query_ratio < 1
-        assert single_tune_query_ratio + single_test_query_ratio <= 1
+        assert 0 < single_tune_query_ratio <= 1
+        assert 0 < single_test_query_ratio <= 1
         self._single_tune_query_ratio = single_tune_query_ratio
         self._single_test_query_ratio = single_test_query_ratio
 

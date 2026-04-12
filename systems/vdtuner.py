@@ -425,7 +425,7 @@ def main():
         dataset_name="gist-p-10",
     )
     
-    for i in range(150):
+    for i in range(100):
         system.step()
 
 
