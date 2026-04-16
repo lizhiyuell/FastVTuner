@@ -27,7 +27,7 @@ common:
   defaultPartitionName: _default
   entityExpiration: -1
   gracefulStopTimeout: 1800
-  gracefulTime: 5000
+  gracefulTime: 100000
   indexSliceSize: 16
   locks:
     metrics:
@@ -90,9 +90,9 @@ dataCoord:
     maxBinlogFileNumber: 32
     maxIdleTime: 600
     maxLife: 86400
-    maxSize: 512
+    maxSize: 1217
     minSizeFromIdleToSealed: 16
-    sealProportion: 0.23
+    sealProportion: 0.01
     smallProportion: 0.50
 dataNode:
   dataSync:
@@ -113,7 +113,7 @@ dataNode:
   port: 21124
   segment:
     deleteBufBytes: 67108864
-    insertBufSize: 16777216
+    insertBufSize: 6742607084
     syncPeriod: 600
   timetick:
     byRPC: true
@@ -422,7 +422,7 @@ rootCoord:
   importTaskRetention: 86400
   maxDatabaseNum: 64
   maxPartitionNum: 4096
-  minSegmentSizeToEnableIndex: 1024
+  minSegmentSizeToEnableIndex: 3938
   port: 53100
 tls:
   caPemPath: configs/cert/ca.pem

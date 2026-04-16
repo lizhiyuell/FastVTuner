@@ -15,11 +15,11 @@ from systems.vdb_engine import VDBEngine
 
 VDB_NAME = "milvus"
 DATASET_NAME = "gist"
-RESULT_FILE = PROJECT_ROOT / "results" / "vdtuner" / VDB_NAME / "gist-p-10_tune.txt"
+RESULT_FILE = PROJECT_ROOT / "results" / "vdtuner" / VDB_NAME / "gist-p-1_tune.txt"
 TOP_K = 10
 OUTPUT_DIR = RESULT_ROOT / Path(__file__).stem / VDB_NAME
-TUNE_OUTPUT_FILE = OUTPUT_DIR / f"{DATASET_NAME}_tune.txt"
-TEST_OUTPUT_FILE = OUTPUT_DIR / f"{DATASET_NAME}_test.txt"
+TUNE_OUTPUT_FILE = OUTPUT_DIR / f"{DATASET_NAME}-p-1_tune.txt"
+TEST_OUTPUT_FILE = OUTPUT_DIR / f"{DATASET_NAME}-p-1_test.txt"
 
 
 def _build_record(step_id, phase, param_names, params, index_time, query_time, recall, query_count):
