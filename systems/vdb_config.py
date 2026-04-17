@@ -63,10 +63,12 @@ class VDBConfig:
 
             knob_type = detail["type"]
             knob_class = detail.get("class")
+            knob_scale = detail.get("scale")
             meta: dict[str, Any] = {}
             meta["name"] = param_name
             meta["type"] = knob_type
             meta["class"] = knob_class
+            meta["scale"] = knob_scale
             if knob_type == "integer":
                 meta["min"] = detail["min"]
                 meta["max"] = detail["max"]
@@ -175,7 +177,7 @@ class VDBConfig:
 
         raise ValueError(f"Unsupported knob type: {meta['type']}")
 
-    def set_normalized_param(self, params: list[float], apply = True) -> None:
+    def set_normalized_param(self, params: list[float], apply = True, amp_ratio=1) -> None:
         if len(params) != len(self.param_names):
             raise ValueError(
                 f"Parameter length mismatch: expected {len(self.param_names)}, got {len(params)}"
@@ -191,9 +193,9 @@ class VDBConfig:
         self.param_original()
 
         if apply:
-            self.apply_params()
+            self.apply_params(amp_ratio=amp_ratio)
 
-    def set_original_param(self, params: list[Any], apply=True) -> None:
+    def set_original_param(self, params: list[Any], apply=True, amp_ratio=1) -> None:
         if len(params) != len(self.param_names):
             raise ValueError(
                 f"Parameter length mismatch: expected {len(self.param_names)}, got {len(params)}"
@@ -219,7 +221,7 @@ class VDBConfig:
         self.param_normalized()
 
         if apply:
-            self.apply_params()
+            self.apply_params(amp_ratio=amp_ratio)
 
     # split the original "*" style parameters into the key-value style
     def _set_nested_value(self, tree: dict[str, Any], path: str, value: Any) -> None:
@@ -233,17 +235,26 @@ class VDBConfig:
             node = node[key]
         node[keys[-1]] = value
 
-    def _milvus_apply_index_config(self) -> None:
+    def _get_applied_value(self, meta, value, amp_ratio=1):
+        if amp_ratio != 1 and meta.get("scale") == "linear":
+            if meta["type"] == "integer":
+                return int(value * amp_ratio)
+            if meta["type"] == "float":
+                return float(value) * amp_ratio
+        return value
+
+    def _milvus_apply_index_config(self, amp_ratio=1) -> None:
         index_type = None
         building_params: dict[str, Any] = {}
         searching_params: dict[str, Any] = {}
         for meta, value in zip(self.param_meta, self.current_params):
+            applied_value = self._get_applied_value(meta, value, amp_ratio)
             if meta["class"] == "type":
-                index_type = value
+                index_type = applied_value
             elif meta["class"] == "building":
-                building_params[meta["name"]] = value
+                building_params[meta["name"]] = applied_value
             elif meta["class"] == "searching":
-                searching_params[meta["name"]] = value
+                searching_params[meta["name"]] = applied_value
 
         if index_type is None:
             raise ValueError("Missing index_type in current params")
@@ -267,21 +278,25 @@ class VDBConfig:
         with self.config_current_path.open("w", encoding="utf-8") as f:
             json.dump(config, f, ensure_ascii=False, indent=2)
 
-    def _milvus_apply_system_config(self) -> None:
+    def _milvus_apply_system_config(self, amp_ratio=1) -> None:
         with self.config_system_path.open("r", encoding="utf-8") as f:
             config = yaml.safe_load(f)
 
         for meta, value in zip(self.param_meta, self.current_params):
             if meta["class"] == "system":
-                self._set_nested_value(config, meta["name"], value)
+                self._set_nested_value(
+                    config,
+                    meta["name"],
+                    self._get_applied_value(meta, value, amp_ratio),
+                )
 
         with self.config_system_path.open("w", encoding="utf-8") as f:
             yaml.safe_dump(config, f, sort_keys=False)
 
-    def apply_params(self) -> None:
+    def apply_params(self, amp_ratio=1) -> None:
         if self.vdb_name == "milvus":
-            self._milvus_apply_index_config()
-            self._milvus_apply_system_config()
+            self._milvus_apply_index_config(amp_ratio=amp_ratio)
+            self._milvus_apply_system_config(amp_ratio=amp_ratio)
         else:
             raise NotImplementedError(f"{self.vdb_name} config is not implemented yet")
 

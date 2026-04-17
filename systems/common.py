@@ -17,6 +17,7 @@ DOCKER_VOLUME_DIR = Path("/extend/volume")
 
 BUILD_PARALLEL = 20
 SEARCH_PARALLEL = 20
+INDEX_BUILD_TIMEOUT_SECONDS = 30 * 60
 
 # specially designed for Milvus
 def update_m_with_dimension(config_template_path, dimension):

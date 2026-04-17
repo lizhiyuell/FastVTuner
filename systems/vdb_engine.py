@@ -219,11 +219,23 @@ class VDBEngine:
                 },
             )
             for index in collection.indexes:
-                pymilvus.wait_for_index_building_complete(
-                    collection_name,
-                    index_name=index.index_name,
-                    using="default",
-                )
+                start_time = time.perf_counter()
+                while True:
+                    progress = pymilvus.utility.index_building_progress(
+                        collection_name,
+                        index_name=index.index_name,
+                        using="default",
+                    )
+                    indexed_rows = int(progress.get("indexed_rows", 0))
+                    total_rows = int(progress.get("total_rows", 0))
+                    if total_rows > 0 and indexed_rows >= total_rows:
+                        break
+                    if time.perf_counter() - start_time > INDEX_BUILD_TIMEOUT_SECONDS:
+                        raise TimeoutError(
+                            f"Milvus index build timeout after {INDEX_BUILD_TIMEOUT_SECONDS}s "
+                            f"(index={index.index_name}, progress={indexed_rows}/{total_rows})"
+                        )
+                    time.sleep(1)
             collection.load()
             return  time.perf_counter() - total_start
         else:

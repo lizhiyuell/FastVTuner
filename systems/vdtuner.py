@@ -360,14 +360,20 @@ class VDTunerSystem(SystemBase):
     def _single_tune_impl(self):
         self._step_id = self._step_id + 1
         print(f"[VDTuner] round {self._step_id}: start build", flush=True)
-        build_time = self.vdb_engine.build()
-        query_time, recall, query_count = self.vdb_engine.query(
-            self._top_k,
-            test=False,
-            ratio=self._single_tune_query_ratio,
-        )
-        query_throughput = query_count / query_time if query_time > 0 else 0.0
-        query_latency = query_time / query_count if query_count > 0 else 0.0
+        try:
+            build_time = self.vdb_engine.build()
+            query_time, recall, query_count = self.vdb_engine.query(
+                self._top_k,
+                test=False,
+                ratio=self._single_tune_query_ratio,
+            )
+            query_throughput = query_count / query_time if query_time > 0 else 0.0
+            query_latency = query_time / query_count if query_count > 0 else 0.0
+        except:
+            build_time = 0
+            query_time, recall, query_count = 0, 0, 0
+            query_throughput = 0
+            query_latency = 0
 
         return TuningRecord(
             step_id=self._step_id,
