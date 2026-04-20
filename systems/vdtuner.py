@@ -170,7 +170,6 @@ class EHVIBO:
     def update_samples(self, X, Y,):
         self.X_init = torch.tensor(X,dtype=torch.float64)
         self.Y_init = torch.tensor(Y,dtype=torch.float64)
-
         models = []
         self.stands = []
 

@@ -231,6 +231,7 @@ class VDBEngine:
                     if total_rows > 0 and indexed_rows >= total_rows:
                         break
                     if time.perf_counter() - start_time > INDEX_BUILD_TIMEOUT_SECONDS:
+                        print("Timeout is triggered!")
                         raise TimeoutError(
                             f"Milvus index build timeout after {INDEX_BUILD_TIMEOUT_SECONDS}s "
                             f"(index={index.index_name}, progress={indexed_rows}/{total_rows})"
