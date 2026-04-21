@@ -12,11 +12,15 @@ import numpy as np
 from common import *
 import os
 import pymilvus
+import signal
 
 env = os.environ.copy()
 env["DOCKER_VOLUME_DIRECTORY"] = DOCKER_VOLUME_DIR
 DEVNULL = sp.DEVNULL
 
+# timeout for the build function
+def _handle_timeout(signum, frame):
+    raise TimeoutError('function timeout')
 
 SERVER_PATH_MAP = {
     "milvus": "milvus-single-node",
@@ -93,11 +97,7 @@ class VDBEngine:
             )
 
     def start(self) -> None:
-        # 1. remove the previous results
-        self._remove_previous()
-
-        # 2. start the container
-        # stop the previous one
+        # 1. stop the previous container before removing its volume files
         sp.run(
             ["docker", "compose", "down"],
             cwd=self.server_path,
@@ -105,6 +105,11 @@ class VDBEngine:
             stdout=DEVNULL,
             stderr=DEVNULL,
         )
+
+        # 2. remove the previous results
+        self._remove_previous()
+
+        # 3. start the container
         sp.run(
             ["docker", "compose", "up", "-d"],
             cwd=self.server_path,
@@ -113,7 +118,7 @@ class VDBEngine:
             stderr=DEVNULL,
         )
 
-        # 3. wait for connection built
+        # 4. wait for connection built
         while True:
             try:
                 with request.urlopen("http://localhost:9091/healthz", timeout=10):
@@ -140,107 +145,99 @@ class VDBEngine:
 
     # build the index with dataset vectors
     def build(self):
-        if self.vec_dataset is None:
-            raise RuntimeError("Dataset is not loaded")
+        signal.signal(signal.SIGALRM, _handle_timeout)
+        signal.alarm(INDEX_BUILD_TIMEOUT_SECONDS)
+        try:
+            if self.vec_dataset is None:
+                raise RuntimeError("Dataset is not loaded")
 
-        if self.db_type == "milvus":
-            current_config = self._load_current_config()
-            upload_params = dict(current_config.get("upload_params") or {})
-            index_type = current_config.get("index")
-            index_params = dict(upload_params.get("index_params") or {})
-            parallel = int(upload_params.get("parallel", 1))
-            if not index_type:
-                raise ValueError(f"Missing `index` in {CURRENT_CONFIG_PATH}")
+            if self.db_type == "milvus":
+                current_config = self._load_current_config()
+                upload_params = dict(current_config.get("upload_params") or {})
+                index_type = current_config.get("index")
+                index_params = dict(upload_params.get("index_params") or {})
+                parallel = int(upload_params.get("parallel", 1))
+                if not index_type:
+                    raise ValueError(f"Missing `index` in {CURRENT_CONFIG_PATH}")
 
-            # we only use several fixed distance names
-            should_norm = False
-            if self.distance_metric=="angular":
-                metric_type = "IP"
-                should_norm = True
-            elif self.distance_metric=="euclidean":
-                metric_type = "L2"
-            elif self.distance_metric=="innter-product":
-                metric_type = "IP"
-            else:
-                raise ValueError(f"Unsupported distance metric: {self.distance_metric}")
+                # we only use several fixed distance names
+                should_norm = False
+                if self.distance_metric=="angular":
+                    metric_type = "IP"
+                    should_norm = True
+                elif self.distance_metric=="euclidean":
+                    metric_type = "L2"
+                elif self.distance_metric=="innter-product":
+                    metric_type = "IP"
+                else:
+                    raise ValueError(f"Unsupported distance metric: {self.distance_metric}")
 
-            vectors = np.asarray(self.vec_dataset, dtype=np.float32)
-            if should_norm:
-                norms = np.linalg.norm(vectors, axis=1, keepdims=True)
-                norms[norms == 0] = 1.0
-                vectors = vectors / norms
+                vectors = np.asarray(self.vec_dataset, dtype=np.float32)
+                if should_norm:
+                    norms = np.linalg.norm(vectors, axis=1, keepdims=True)
+                    norms[norms == 0] = 1.0
+                    vectors = vectors / norms
 
-            pymilvus.connections.connect(alias="default", host="localhost", port="19530")
-            collection_name = COLLECTION_NAME
-            try:
-                pymilvus.utility.drop_collection(collection_name, using="default")
-            except pymilvus.MilvusException:
-                pass
+                pymilvus.connections.connect(alias="default", host="localhost", port="19530")
+                collection_name = COLLECTION_NAME
+                try:
+                    pymilvus.utility.drop_collection(collection_name, using="default")
+                except pymilvus.MilvusException:
+                    pass
 
-            schema = pymilvus.CollectionSchema(
-                [
-                    pymilvus.FieldSchema(name="id", dtype=pymilvus.DataType.INT64, is_primary=True),
-                    pymilvus.FieldSchema(
-                        name="vector",
-                        dtype=pymilvus.DataType.FLOAT_VECTOR,
-                        dim=int(np.asarray(self.dimension).reshape(-1)[0]),
-                    ),
-                ],
-                description=collection_name,
-            )
-            collection = pymilvus.Collection(name=collection_name, schema=schema, using="default")
-
-            total_start = time.perf_counter()
-            batch_size = BATCH_SIZE
-
-            if int(parallel) <= 1:
-                for start in range(0, len(vectors), batch_size):
-                    end = min(start + batch_size, len(vectors))
-                    collection.insert([list(range(start, end)), vectors[start:end].tolist()])
-            else:
-                ctx = mp.get_context(_get_mp_start_method())
-                batches = (
-                    (start, vectors[start : start + batch_size].tolist())
-                    for start in range(0, len(vectors), batch_size)
+                schema = pymilvus.CollectionSchema(
+                    [
+                        pymilvus.FieldSchema(name="id", dtype=pymilvus.DataType.INT64, is_primary=True),
+                        pymilvus.FieldSchema(
+                            name="vector",
+                            dtype=pymilvus.DataType.FLOAT_VECTOR,
+                            dim=int(np.asarray(self.dimension).reshape(-1)[0]),
+                        ),
+                    ],
+                    description=collection_name,
                 )
-                with ctx.Pool(
-                    processes=int(parallel),
-                    initializer=_init_milvus_build_worker,
-                ) as pool:
-                    list(pool.imap(_insert_milvus_batch, batches))
+                collection = pymilvus.Collection(name=collection_name, schema=schema, using="default")
 
-            collection.flush()
-            collection.create_index(
-                field_name="vector",
-                index_params={
-                    "metric_type": metric_type,
-                    "index_type": index_type,
-                    "params": index_params,
-                },
-            )
-            for index in collection.indexes:
-                start_time = time.perf_counter()
-                while True:
-                    progress = pymilvus.utility.index_building_progress(
+                total_start = time.perf_counter()
+                batch_size = BATCH_SIZE
+
+                if int(parallel) <= 1:
+                    for start in range(0, len(vectors), batch_size):
+                        end = min(start + batch_size, len(vectors))
+                        collection.insert([list(range(start, end)), vectors[start:end].tolist()])
+                else:
+                    ctx = mp.get_context(_get_mp_start_method())
+                    batches = (
+                        (start, vectors[start : start + batch_size].tolist())
+                        for start in range(0, len(vectors), batch_size)
+                    )
+                    with ctx.Pool(
+                        processes=int(parallel),
+                        initializer=_init_milvus_build_worker,
+                    ) as pool:
+                        list(pool.imap(_insert_milvus_batch, batches))
+
+                collection.flush()
+                collection.create_index(
+                    field_name="vector",
+                    index_params={
+                        "metric_type": metric_type,
+                        "index_type": index_type,
+                        "params": index_params,
+                    },
+                )
+                for index in collection.indexes:
+                    pymilvus.utility.wait_for_index_building_complete(
                         collection_name,
                         index_name=index.index_name,
                         using="default",
                     )
-                    indexed_rows = int(progress.get("indexed_rows", 0))
-                    total_rows = int(progress.get("total_rows", 0))
-                    if total_rows > 0 and indexed_rows >= total_rows:
-                        break
-                    if time.perf_counter() - start_time > INDEX_BUILD_TIMEOUT_SECONDS:
-                        print("Timeout is triggered!")
-                        raise TimeoutError(
-                            f"Milvus index build timeout after {INDEX_BUILD_TIMEOUT_SECONDS}s "
-                            f"(index={index.index_name}, progress={indexed_rows}/{total_rows})"
-                        )
-                    time.sleep(1)
-            collection.load()
-            return  time.perf_counter() - total_start
-        else:
-            raise NotImplementedError(f"build is not implemented for {self.db_type}")
+                collection.load()
+                return  time.perf_counter() - total_start
+            else:
+                raise NotImplementedError(f"build is not implemented for {self.db_type}")
+        finally:
+            signal.alarm(0)
 
     # one search step with search_vecs
     # test: whether use the search/test vectors
@@ -325,6 +322,16 @@ class VDBEngine:
         if not DOCKER_VOLUME_DIR.exists():
             return
 
+        for _ in range(3):
+            try:
+                for entry in os.scandir(DOCKER_VOLUME_DIR):
+                    if entry.is_dir(follow_symlinks=False):
+                        shutil.rmtree(entry.path)
+                    else:
+                        os.unlink(entry.path)
+                return
+            except OSError:
+                time.sleep(1)
         for entry in os.scandir(DOCKER_VOLUME_DIR):
             if entry.is_dir(follow_symlinks=False):
                 shutil.rmtree(entry.path)

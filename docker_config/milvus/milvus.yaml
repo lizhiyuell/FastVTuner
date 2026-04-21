@@ -27,7 +27,7 @@ common:
   defaultPartitionName: _default
   entityExpiration: -1
   gracefulStopTimeout: 1800
-  gracefulTime: 100000
+  gracefulTime: 61880
   indexSliceSize: 16
   locks:
     metrics:
@@ -90,9 +90,9 @@ dataCoord:
     maxBinlogFileNumber: 32
     maxIdleTime: 600
     maxLife: 86400
-    maxSize: 10000
+    maxSize: 100
     minSizeFromIdleToSealed: 16
-    sealProportion: 0.01
+    sealProportion: 0.14
     smallProportion: 0.50
 dataNode:
   dataSync:
@@ -113,7 +113,7 @@ dataNode:
   port: 21124
   segment:
     deleteBufBytes: 67108864
-    insertBufSize: 10000000000
+    insertBufSize: 8080380750
     syncPeriod: 600
   timetick:
     byRPC: true

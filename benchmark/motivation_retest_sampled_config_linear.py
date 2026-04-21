@@ -21,6 +21,8 @@ OUTPUT_DIR = RESULT_ROOT / Path(__file__).stem / VDB_NAME
 TUNE_OUTPUT_FILE = OUTPUT_DIR / f"{DATASET_NAME}-p-1_tune.txt"
 TEST_OUTPUT_FILE = OUTPUT_DIR / f"{DATASET_NAME}-p-1_test.txt"
 AMP_RATIO = 100
+# START_STEP_ID = 1
+START_STEP_ID = 71
 
 def _build_record(step_id, phase, param_names, params, index_time, query_time, recall, query_count):
     query_throughput = query_count / query_time if query_time > 0 else 0.0
@@ -45,6 +47,8 @@ def main():
     configs = load_result_config(RESULT_FILE)
     if not configs:
         raise ValueError(f"No configs found in result file: {RESULT_FILE}")
+    if START_STEP_ID < 1 or START_STEP_ID > len(configs):
+        raise ValueError(f"Invalid START_STEP_ID={START_STEP_ID}, expected 1-{len(configs)}")
 
     vdb_engine = VDBEngine(VDB_NAME)
     vdb_engine.load_dataset(DATASET_NAME)
@@ -56,46 +60,80 @@ def main():
     print(f"[input] result_file={RESULT_FILE}", flush=True)
     print(f"[output] tune_file={TUNE_OUTPUT_FILE}", flush=True)
     print(f"[output] test_file={TEST_OUTPUT_FILE}", flush=True)
+    print(f"[input] start_step_id={START_STEP_ID}", flush=True)
 
     vdb_engine.start()
     try:
-        with TUNE_OUTPUT_FILE.open("w", encoding="utf-8") as tune_f, TEST_OUTPUT_FILE.open("w", encoding="utf-8") as test_f:
-            for step_id, params in enumerate(configs, start=1):
+        open_mode = "w" if START_STEP_ID == 1 else "a"
+        start_step_id = START_STEP_ID
+        with TUNE_OUTPUT_FILE.open(open_mode, encoding="utf-8") as tune_f, TEST_OUTPUT_FILE.open(open_mode, encoding="utf-8") as test_f:
+            for step_id, params in enumerate(configs[start_step_id - 1:], start=start_step_id):
                 original_params = [params[name] for name in vdb_config.param_names]
                 vdb_config.set_original_param(original_params, amp_ratio=AMP_RATIO)
 
                 print(f"[progress] retest {step_id}/{len(configs)}", flush=True)
 
-                index_time = vdb_engine.build()
-                tune_query_time, tune_recall, tune_query_count = vdb_engine.query(TOP_K, test=False, ratio=1.0)
-                tune_record = _build_record(
-                    step_id,
-                    "tune",
-                    vdb_config.param_names,
-                    vdb_config.get_original_param(),
-                    index_time,
-                    tune_query_time,
-                    tune_recall,
-                    tune_query_count,
-                )
-                tune_f.write(json.dumps(tune_record, ensure_ascii=False))
-                tune_f.write("\n")
-                tune_f.flush()
+                try:
+                    index_time = vdb_engine.build()
+                    tune_query_time, tune_recall, tune_query_count = vdb_engine.query(TOP_K, test=False, ratio=1.0)
+                    tune_record = _build_record(
+                        step_id,
+                        "tune",
+                        vdb_config.param_names,
+                        vdb_config.get_original_param(),
+                        index_time,
+                        tune_query_time,
+                        tune_recall,
+                        tune_query_count,
+                    )
+                    tune_f.write(json.dumps(tune_record, ensure_ascii=False))
+                    tune_f.write("\n")
+                    tune_f.flush()
 
-                test_query_time, test_recall, test_query_count = vdb_engine.query(TOP_K, test=True, ratio=1.0)
-                test_record = _build_record(
-                    step_id,
-                    "test",
-                    vdb_config.param_names,
-                    vdb_config.get_original_param(),
-                    0.0,
-                    test_query_time,
-                    test_recall,
-                    test_query_count,
-                )
-                test_f.write(json.dumps(test_record, ensure_ascii=False))
-                test_f.write("\n")
-                test_f.flush()
+                    test_query_time, test_recall, test_query_count = vdb_engine.query(TOP_K, test=True, ratio=1.0)
+                    test_record = _build_record(
+                        step_id,
+                        "test",
+                        vdb_config.param_names,
+                        vdb_config.get_original_param(),
+                        0.0,
+                        test_query_time,
+                        test_recall,
+                        test_query_count,
+                    )
+                    test_f.write(json.dumps(test_record, ensure_ascii=False))
+                    test_f.write("\n")
+                    test_f.flush()
+                except:
+                    print("Test timeout, gonna skip")
+                    tune_record = _build_record(
+                        step_id,
+                        "tune",
+                        vdb_config.param_names,
+                        vdb_config.get_original_param(),
+                        0.0,
+                        0,
+                        0,
+                        0,
+                    )
+                    tune_f.write(json.dumps(tune_record, ensure_ascii=False))
+                    tune_f.write("\n")
+                    tune_f.flush()
+
+                    test_record = _build_record(
+                        step_id,
+                        "tune",
+                        vdb_config.param_names,
+                        vdb_config.get_original_param(),
+                        0.0,
+                        0,
+                        0,
+                        0,
+                    )
+                    test_f.write(json.dumps(test_record, ensure_ascii=False))
+                    test_f.write("\n")
+                    test_f.flush()
+
     finally:
         vdb_engine.stop()
 
