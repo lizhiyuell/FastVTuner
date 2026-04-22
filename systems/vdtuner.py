@@ -271,7 +271,6 @@ class VDTunerSystem(SystemBase):
         self.vdb_engine.start()
         res_record = self.single_tune()
         self.single_test()
-        self.vdb_engine.stop()
 
         self.X[polling_k].append(self.vdb_config.get_normalized_param())
         self.Y[polling_k].append([
@@ -281,6 +280,8 @@ class VDTunerSystem(SystemBase):
         ])
         
         self.update_model()
+
+        self.vdb_engine.stop()
 
     def reward_transform(self,):
         # to calculate within each index type set
@@ -394,15 +395,21 @@ class VDTunerSystem(SystemBase):
             query_latency=query_latency,
         )
 
+    # in case of failed building
     def _single_test_impl(self):
         print(f"[VDTuner] round {self._step_id}: start test", flush=True)
-        query_time, recall, query_count = self.vdb_engine.query(
-            self._top_k,
-            test=True,
-            ratio=self._single_test_query_ratio,
-        )
-        query_throughput = query_count / query_time if query_time > 0 else 0.0
-        query_latency = query_time / query_count if query_count > 0 else 0.0
+        try:
+            query_time, recall, query_count = self.vdb_engine.query(
+                self._top_k,
+                test=True,
+                ratio=self._single_test_query_ratio,
+            )
+            query_throughput = query_count / query_time if query_time > 0 else 0.0
+            query_latency = query_time / query_count if query_count > 0 else 0.0
+        except:
+            query_time, recall, query_count = 0, 0, 0
+            query_throughput = 0
+            query_latency = 0
 
         return TuningRecord(
             step_id=self._step_id,

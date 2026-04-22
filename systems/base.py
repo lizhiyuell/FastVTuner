@@ -31,6 +31,7 @@ class TuningRecord:
     record_nr: int # 本轮参与统计的查询总条目数
     query_throughput: float = 0.0 # query吞吐率
     query_latency: float = 0.0 # 平均query延迟
+    skip: bool = False # 是否跳过全量数据集调优
 
     # 将调优记录转换为普通字典，便于序列化或写日志。
     def to_dict(self) -> dict[str, Any]:
@@ -110,7 +111,7 @@ class SystemBase(ABC):
             raise ValueError("top_k must be positive")
         self._top_k = int(top_k)
 
-    # 执行一次调优步骤，并将结果追加到历史记录中。
+    # 执行一次调优步骤，并将结果追加到历史记录中。。
     def single_tune(self) -> TuningRecord:
         return self._run_phase("tune", self._single_tune_impl)
 
