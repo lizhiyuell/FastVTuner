@@ -32,6 +32,12 @@ class TuningRecord:
     query_throughput: float = 0.0 # query吞吐率
     query_latency: float = 0.0 # 平均query延迟
     skip: bool = False # 是否跳过全量数据集调优
+    sampled_index_time: float = 0.0 # sampled数据集上的索引构建时间
+    sampled_query_time: float = 0.0 # sampled数据集上的总查询耗时
+    sampled_query_throughput: float = 0.0 # sampled数据集上的query吞吐率
+    sampled_recall: float = 0.0 # sampled数据集上的平均召回率
+    sampled_record_nr: int = 0 # sampled数据集上参与统计的查询总条目数
+    sampled_query_latency: float = 0.0 # sampled数据集上的平均query延迟
 
     # 将调优记录转换为普通字典，便于序列化或写日志。
     def to_dict(self) -> dict[str, Any]:

@@ -196,6 +196,7 @@ class FastVTunerSystem(SystemBase):
         top_k = 10,
         single_tune_query_ratio=1.0,
         single_test_query_ratio=1.0,
+        sampled_dataset_name=None,
         seed=1206
     ):
         super().__init__(
@@ -211,6 +212,9 @@ class FastVTunerSystem(SystemBase):
         self.vbo = EHVIBO(self.knob_num, seed=seed)
         self.seed = seed
         self.sampled_vdb_engine = None
+        self.current_sampled_record = None
+        if sampled_dataset_name is not None:
+            self.init_sampled_vdb_engine(sampled_dataset_name)
         torch.manual_seed(seed)
         random.seed(seed)
 
@@ -248,6 +252,7 @@ class FastVTunerSystem(SystemBase):
             self.vdb_config.set_original_param(param_original)
 
             # run the exp with default configurations
+            self._run_sampled_test()
             self.vdb_engine.start()
             res_record = self.single_tune()
             self.single_test()
@@ -274,13 +279,11 @@ class FastVTunerSystem(SystemBase):
 
         # the new_x is an array of parameter array, we detach it
         self.vdb_config.set_normalized_param(new_x[0])
-        if self._should_skip_full_tune():
-            res_record = self._skip_tune()
-        else:
-            self.vdb_engine.start()
-            res_record = self.single_tune()
-            self.single_test()
-            self.vdb_engine.stop()
+        self._run_sampled_test()
+        self.vdb_engine.start()
+        res_record = self.single_tune()
+        self.single_test()
+        self.vdb_engine.stop()
 
         self.X[polling_k].append(self.vdb_config.get_normalized_param())
         self.Y[polling_k].append([
@@ -296,18 +299,22 @@ class FastVTunerSystem(SystemBase):
         Y = []
         self.chosen_ref_k = dict.fromkeys(self.polling_index.keys(), None)
         for k, Y_k in self.Y.items():
-            Y_k_arr = np.array(Y_k)[:,:2]
+            Y_k_arr = np.array(Y_k, dtype=float)[:,:2]
             _, popu = fast_non_dominated_sort(Y_k_arr)
 
-            fitness = -1 / (np.abs(Y_k_arr[:,0] / np.max(Y_k_arr[:,0]) - Y_k_arr[:,1] / np.max(Y_k_arr[:,1])) + 1e-6)
+            max_ref = np.max(Y_k_arr, axis=0)
+            max_ref[~np.isfinite(max_ref) | (max_ref == 0)] = 1.0
+            fitness = -1 / (np.abs(Y_k_arr[:,0] / max_ref[0] - Y_k_arr[:,1] / max_ref[1]) + 1e-6)
             fitness[popu[0]] = - fitness[popu[0]]
 
             chosen_idx = np.argmax(fitness)
             chosen_ref = Y_k_arr[chosen_idx,:]
             self.chosen_ref_k[k] = chosen_ref.tolist()
 
-            Y_k_arr[:,0] /= chosen_ref[0]
-            Y_k_arr[:,1] /= chosen_ref[1]
+            norm_ref = chosen_ref.copy()
+            norm_ref[~np.isfinite(norm_ref) | (norm_ref == 0)] = 1.0
+            Y_k_arr[:,0] /= norm_ref[0]
+            Y_k_arr[:,1] /= norm_ref[1]
 
             Y += Y_k_arr.tolist()
 
@@ -343,21 +350,25 @@ class FastVTunerSystem(SystemBase):
     def index_type_score(self, ):
         # to calculate within the whole set
         Y = [j for item in self.Y.values() for j in item]
-        Y_arr = np.array(Y)[:,:2]
+        Y_arr = np.array(Y, dtype=float)[:,:2]
         _, popu = fast_non_dominated_sort(Y_arr)
 
-        fitness = -1 / (np.abs(Y_arr[:,0] / np.max(Y_arr[:,0]) - Y_arr[:,1] / np.max(Y_arr[:,1])) + 1e-6)
+        max_ref = np.max(Y_arr, axis=0)
+        max_ref[~np.isfinite(max_ref) | (max_ref == 0)] = 1.0
+        fitness = -1 / (np.abs(Y_arr[:,0] / max_ref[0] - Y_arr[:,1] / max_ref[1]) + 1e-6)
         fitness[popu[0]] = - fitness[popu[0]]
 
         chosen_idx = np.argmax(fitness)
         self.chosen_ref_whole = Y_arr[chosen_idx,:]
+        norm_ref = self.chosen_ref_whole.copy()
+        norm_ref[~np.isfinite(norm_ref) | (norm_ref == 0)] = 1.0
 
         self.delta_hv = dict.fromkeys(self.remain_types, -9999)
 
         for k in self.remain_types:
             Y_nok = [j for i,item in self.Y.items() if i != k for j in item]
 
-            Y_nok_arr = np.array(Y_nok)[:,:2] / self.chosen_ref_whole
+            Y_nok_arr = np.array(Y_nok, dtype=float)[:,:2] / norm_ref
             _, popu_nok = fast_non_dominated_sort(Y_nok_arr)
             popu0_nok = Y_nok_arr[popu_nok[0],:]
 
@@ -365,86 +376,50 @@ class FastVTunerSystem(SystemBase):
 
         self.worst_type_record.append(max(self.delta_hv, key=lambda k: self.delta_hv[k]))
 
-    def _should_skip_full_tune(self):
+    def _run_sampled_test(self):
         if self.sampled_vdb_engine is None:
-            return False
+            self.current_sampled_record = None
+            return
 
-        sampled_query_throughput, sampled_recall = self._test_on_sampled_dataset()
-        return not self._is_pareto_with_full_test_history(
-            sampled_query_throughput,
-            sampled_recall,
-        )
+        self.current_sampled_record = self._test_on_sampled_dataset()
 
     def _test_on_sampled_dataset(self):
-        sampled_query_throughput = 0
-        sampled_recall = 0
-
-        self.sampled_vdb_engine.start()
-        try:
-            try:
-                self.sampled_vdb_engine.build()
-                query_time, recall, query_count = self.sampled_vdb_engine.query(
-                    self._top_k,
-                    test=False,
-                    ratio=self._single_tune_query_ratio,
-                )
-                sampled_query_throughput = query_count / query_time if query_time > 0 else 0.0
-                sampled_recall = recall
-            except:
-                pass
-        finally:
-            self.sampled_vdb_engine.stop()
-
-        return sampled_query_throughput, sampled_recall
-
-    def _is_pareto_with_full_test_history(self, query_throughput, recall):
-        full_test_records = [
-            record for record in self.history
-            if record.phase == "test" and not record.skip
-        ]
-        if not full_test_records:
-            return True
-
-        for record in full_test_records:
-            better_or_equal = (
-                record.query_throughput >= query_throughput
-                and record.recall >= recall
-            )
-            strictly_better = (
-                record.query_throughput > query_throughput
-                or record.recall > recall
-            )
-            if better_or_equal and strictly_better:
-                return False
-        return True
-
-    def _skip_tune(self):
-        return self._run_phase("tune", self._skip_tune_impl)
-
-    def _skip_tune_impl(self):
-        self._step_id = self._step_id + 1
-        print(f"[FastVTuner] round {self._step_id}: skip full tune", flush=True)
-
-        return TuningRecord(
-            step_id=self._step_id,
-            phase="tune",
-            dataset_name=self.dataset_name,
-            build_parallel=BUILD_PARALLEL,
-            search_parallel=SEARCH_PARALLEL,
-            params=dict(
+        sampled_record = {
+            "sampled_step_id": self._step_id + 1,
+            "params": dict(
                 zip(
                     self.vdb_config.param_names,
                     self.vdb_config.get_original_param(),
                 )
             ),
-            index_time=0,
-            query_time=0,
-            recall=0,
-            record_nr=0,
-            query_throughput=0,
-            query_latency=0,
-            skip=True,
-        )
+            "index_time": 0,
+            "query_time": 0,
+            "query_throughput": 0,
+            "recall": 0,
+            "record_nr": 0,
+            "query_latency": 0,
+        }
+
+        self.sampled_vdb_engine.start()
+        try:
+            try:
+                sampled_record["index_time"] = self.sampled_vdb_engine.build()
+                query_time, recall, query_count = self.sampled_vdb_engine.query(
+                    self._top_k,
+                    test=True,
+                    ratio=self._single_test_query_ratio,
+                )
+                sampled_record["query_time"] = query_time
+                sampled_record["query_throughput"] = query_count / query_time if query_time > 0 else 0.0
+                sampled_record["recall"] = recall
+                sampled_record["record_nr"] = query_count
+                sampled_record["query_latency"] = query_time / query_count if query_count > 0 else 0.0
+            except:
+                pass
+        finally:
+            self.sampled_vdb_engine.stop()
+
+        return sampled_record
 
     def _single_tune_impl(self):
         self._step_id = self._step_id + 1
@@ -482,6 +457,30 @@ class FastVTunerSystem(SystemBase):
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
+            sampled_index_time=(
+                self.current_sampled_record["index_time"]
+                if self.current_sampled_record is not None else 0.0
+            ),
+            sampled_query_time=(
+                self.current_sampled_record["query_time"]
+                if self.current_sampled_record is not None else 0.0
+            ),
+            sampled_query_throughput=(
+                self.current_sampled_record["query_throughput"]
+                if self.current_sampled_record is not None else 0.0
+            ),
+            sampled_recall=(
+                self.current_sampled_record["recall"]
+                if self.current_sampled_record is not None else 0.0
+            ),
+            sampled_record_nr=(
+                self.current_sampled_record["record_nr"]
+                if self.current_sampled_record is not None else 0
+            ),
+            sampled_query_latency=(
+                self.current_sampled_record["query_latency"]
+                if self.current_sampled_record is not None else 0.0
+            ),
         )
 
     # in case of failed building
@@ -518,14 +517,37 @@ class FastVTunerSystem(SystemBase):
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
+            sampled_index_time=(
+                self.current_sampled_record["index_time"]
+                if self.current_sampled_record is not None else 0.0
+            ),
+            sampled_query_time=(
+                self.current_sampled_record["query_time"]
+                if self.current_sampled_record is not None else 0.0
+            ),
+            sampled_query_throughput=(
+                self.current_sampled_record["query_throughput"]
+                if self.current_sampled_record is not None else 0.0
+            ),
+            sampled_recall=(
+                self.current_sampled_record["recall"]
+                if self.current_sampled_record is not None else 0.0
+            ),
+            sampled_record_nr=(
+                self.current_sampled_record["record_nr"]
+                if self.current_sampled_record is not None else 0
+            ),
+            sampled_query_latency=(
+                self.current_sampled_record["query_latency"]
+                if self.current_sampled_record is not None else 0.0
+            ),
         )
 
 def main():
     system = FastVTunerSystem(
         vdb_name="milvus",
-        # dataset_name="gist",
-        # dataset_name="gist-p-10",
-        dataset_name="gist-p-1",
+        dataset_name="gist",
+        sampled_dataset_name="gist-p-1",
     )
     
     for i in range(100):
