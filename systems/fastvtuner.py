@@ -215,8 +215,8 @@ class FastVTunerSystem(SystemBase):
         self.current_sampled_record = None
 
         # save the predicted throughput and recall for the new configuration that is derived before testing
-        self.predicted_throughput = 0
-        self.predicted_recall = 0
+        self.predicted_throughput = None
+        self.predicted_recall = None
 
         if sampled_dataset_name is not None:
             self.init_sampled_vdb_engine(sampled_dataset_name)
@@ -430,6 +430,27 @@ class FastVTunerSystem(SystemBase):
 
         return sampled_record
 
+    def _build_extra_record(self, include_prediction=False):
+        extra = {}
+
+        if self.current_sampled_record is not None:
+            extra.update({
+                "sampled_index_time": self.current_sampled_record["index_time"],
+                "sampled_query_time": self.current_sampled_record["query_time"],
+                "sampled_query_throughput": self.current_sampled_record["query_throughput"],
+                "sampled_recall": self.current_sampled_record["recall"],
+                "sampled_record_nr": self.current_sampled_record["record_nr"],
+                "sampled_query_latency": self.current_sampled_record["query_latency"],
+            })
+
+        if include_prediction and self.predicted_throughput is not None and self.predicted_recall is not None:
+            extra.update({
+                "predicted_throughput": self.predicted_throughput,
+                "predicted_recall": self.predicted_recall,
+            })
+
+        return extra
+
     def _single_tune_impl(self):
         self._step_id = self._step_id + 1
         print(f"[FastVTuner] round {self._step_id}: start build", flush=True)
@@ -466,30 +487,7 @@ class FastVTunerSystem(SystemBase):
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
-            sampled_index_time=(
-                self.current_sampled_record["index_time"]
-                if self.current_sampled_record is not None else 0.0
-            ),
-            sampled_query_time=(
-                self.current_sampled_record["query_time"]
-                if self.current_sampled_record is not None else 0.0
-            ),
-            sampled_query_throughput=(
-                self.current_sampled_record["query_throughput"]
-                if self.current_sampled_record is not None else 0.0
-            ),
-            sampled_recall=(
-                self.current_sampled_record["recall"]
-                if self.current_sampled_record is not None else 0.0
-            ),
-            sampled_record_nr=(
-                self.current_sampled_record["record_nr"]
-                if self.current_sampled_record is not None else 0
-            ),
-            sampled_query_latency=(
-                self.current_sampled_record["query_latency"]
-                if self.current_sampled_record is not None else 0.0
-            ),
+            extra=self._build_extra_record(include_prediction=True),
         )
 
     # in case of failed building
@@ -526,30 +524,7 @@ class FastVTunerSystem(SystemBase):
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
-            sampled_index_time=(
-                self.current_sampled_record["index_time"]
-                if self.current_sampled_record is not None else 0.0
-            ),
-            sampled_query_time=(
-                self.current_sampled_record["query_time"]
-                if self.current_sampled_record is not None else 0.0
-            ),
-            sampled_query_throughput=(
-                self.current_sampled_record["query_throughput"]
-                if self.current_sampled_record is not None else 0.0
-            ),
-            sampled_recall=(
-                self.current_sampled_record["recall"]
-                if self.current_sampled_record is not None else 0.0
-            ),
-            sampled_record_nr=(
-                self.current_sampled_record["record_nr"]
-                if self.current_sampled_record is not None else 0
-            ),
-            sampled_query_latency=(
-                self.current_sampled_record["query_latency"]
-                if self.current_sampled_record is not None else 0.0
-            ),
+            extra=self._build_extra_record(),
         )
 
 def main():

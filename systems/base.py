@@ -1,7 +1,7 @@
 from __future__ import annotations
 
 from abc import ABC, abstractmethod
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from random import Random
 from pathlib import Path
 import json
@@ -32,16 +32,16 @@ class TuningRecord:
     query_throughput: float = 0.0 # query吞吐率
     query_latency: float = 0.0 # 平均query延迟
     skip: bool = False # 是否跳过全量数据集调优
-    sampled_index_time: float = 0.0 # sampled数据集上的索引构建时间
-    sampled_query_time: float = 0.0 # sampled数据集上的总查询耗时
-    sampled_query_throughput: float = 0.0 # sampled数据集上的query吞吐率
-    sampled_recall: float = 0.0 # sampled数据集上的平均召回率
-    sampled_record_nr: int = 0 # sampled数据集上参与统计的查询总条目数
-    sampled_query_latency: float = 0.0 # sampled数据集上的平均query延迟
+    extra: dict[str, Any] = field(default_factory=dict) # 系统特有的扩展字段
 
     # 将调优记录转换为普通字典，便于序列化或写日志。
     def to_dict(self) -> dict[str, Any]:
-        return asdict(self)
+        data = asdict(self)
+        extra = data.pop("extra", {}) or {}
+        for key, value in extra.items():
+            if key not in data:
+                data[key] = value
+        return data
 
 
 # 调优系统的基类，每一种调优系统都要集成
