@@ -35,26 +35,9 @@ def load_results(file_path):
     return results
 
 
-def get_pareto_points(points, tput_key, recall_key):
-    sorted_points = sorted(
-        points,
-        key=lambda item: (item[tput_key], item[recall_key], item["step_id"]),
-    )
-
-    pareto = []
-    max_recall = float("-inf")
-    for item in reversed(sorted_points):
-        if item[recall_key] > max_recall:
-            pareto.append(item)
-            max_recall = item[recall_key]
-
-    pareto.reverse()
-    return pareto
-
-
-def get_axis_limits(points, x_key, y_key):
-    x_values = [item[x_key] for item in points]
-    y_values = [item[y_key] for item in points]
+def get_axis_limits(x_values, y_values):
+    if not x_values or not y_values:
+        raise ValueError("Axis values must not be empty")
 
     x_min = min(x_values)
     x_max = max(x_values)
@@ -64,6 +47,12 @@ def get_axis_limits(points, x_key, y_key):
     x_pad = max((x_max - x_min) * 0.08, 1e-4)
     y_pad = max((y_max - y_min) * 0.08, 1e-4)
     return (x_min - x_pad, x_max + x_pad), (y_min - y_pad, y_max + y_pad)
+
+
+def get_shared_axis_limits(points):
+    x_values = [item["full_recall"] for item in points] + [item["sampled_recall"] for item in points]
+    y_values = [item["full_tput"] for item in points] + [item["sampled_tput"] for item in points]
+    return get_axis_limits(x_values, y_values)
 
 
 def build_color_map(results):
@@ -99,9 +88,7 @@ def create_annotations(ax, points, x_key, y_key):
         )
 
 
-def plot_one_axis(ax, points, x_key, y_key, title, color_map):
-    pareto = get_pareto_points(points, y_key, x_key)
-    xlim, ylim = get_axis_limits(points, x_key, y_key)
+def plot_one_axis(ax, points, x_key, y_key, title, color_map, xlim, ylim):
     ax.set_xlim(xlim)
     ax.set_ylim(ylim)
 
@@ -120,17 +107,6 @@ def plot_one_axis(ax, points, x_key, y_key, title, color_map):
             label=index_type,
         )
 
-    ax.plot(
-        [item[x_key] for item in pareto],
-        [item[y_key] for item in pareto],
-        "-o",
-        linewidth=2,
-        markersize=4,
-        color="black",
-        label="Pareto",
-        zorder=3,
-    )
-
     create_annotations(ax, points, x_key, y_key)
 
     ax.set_title(title)
@@ -141,6 +117,7 @@ def plot_one_axis(ax, points, x_key, y_key, title, color_map):
 
 def plot_results(results, output_file):
     color_map = build_color_map(results)
+    xlim, ylim = get_shared_axis_limits(results)
     fig, axes = plt.subplots(1, 2, figsize=(18, 8))
 
     plot_one_axis(
@@ -150,6 +127,8 @@ def plot_results(results, output_file):
         "full_tput",
         "Full Dataset",
         color_map,
+        xlim,
+        ylim,
     )
     plot_one_axis(
         axes[1],
@@ -158,6 +137,8 @@ def plot_results(results, output_file):
         "sampled_tput",
         "Sampled Dataset",
         color_map,
+        xlim,
+        ylim,
     )
 
     handles, labels = axes[0].get_legend_handles_labels()
@@ -168,7 +149,7 @@ def plot_results(results, output_file):
 
 
 def main():
-    parser = argparse.ArgumentParser(description="Plot full/sample approximation results with Pareto frontiers.")
+    parser = argparse.ArgumentParser(description="Plot full/sample approximation results.")
     parser.add_argument("result_file", help="Path to a result txt file, e.g. results/fastvtuner/milvus/gist_tune.txt")
     args = parser.parse_args()
 

@@ -56,6 +56,7 @@ def hypervolume_calcu(all_sol, ref_point=[0,0], opt_max=True):
         ref_point[0] = sol[0]
     return volume
 
+# sort the Pareto front of different layers, but only the 0 layer matters
 def fast_non_dominated_sort(P):
     def compare(p1, p2):
         D = len(p1)
@@ -115,10 +116,8 @@ class EHVIBO:
         self.seed = seed
         self.X_init = None
         self.Y_init = None
-
-        self.kernel_init()
     
-    def kernel_init(self,):
+    def make_kernel(self,):
         covar_module1 = MaternKernel(
                 nu=2.5,
                 active_dims=(0),
@@ -126,13 +125,14 @@ class EHVIBO:
             )
         covar_module2 = MaternKernel(
                 nu=2.5,
-                active_dims=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15),
+                # active_dims=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15),
+                active_dims=tuple(i for i in range(1, self.knob_num)),
                 lengthscale_prior=GammaPrior(3.0, 6.0),
             )
         
         product_covar_module = ProductKernel(covar_module1, covar_module2)
 
-        self.covar_module = ScaleKernel(
+        return ScaleKernel(
             product_covar_module,
             outputscale_prior=GammaPrior(2.0, 0.15),
             )
@@ -170,13 +170,14 @@ class EHVIBO:
     def update_samples(self, X, Y,):
         self.X_init = torch.tensor(X,dtype=torch.float64)
         self.Y_init = torch.tensor(Y,dtype=torch.float64)
-        models = []
+        models = [] # two models in total, one for throughput and one for recall
         self.stands = []
 
         for i in range(self.Y_init.shape[-1]):
             train_y = self.Y_init[..., i : i + 1]
             models.append(SingleTaskGP(
                 self.X_init, train_y,
+                covar_module=self.make_kernel(),
                 outcome_transform = Standardize(m=1)
                 ))
             
@@ -212,6 +213,7 @@ class VDTunerSystem(SystemBase):
         torch.manual_seed(seed)
         random.seed(seed)
 
+        # 这个地方需要修改，最好能合并到config的部分中
         self.polling_sys = [0] + [9,10,11,12,13,14,15]
         self.polling_index = {
             'FLAT': [],
@@ -288,15 +290,15 @@ class VDTunerSystem(SystemBase):
         Y = []
         self.chosen_ref_k = dict.fromkeys(self.polling_index.keys(), None)
         for k, Y_k in self.Y.items():
-            Y_k_arr = np.array(Y_k)[:,:2]
+            Y_k_arr = np.array(Y_k)[:,:2] # only extract query_throughput and recall
             _, popu = fast_non_dominated_sort(Y_k_arr)
 
             fitness = -1 / (np.abs(Y_k_arr[:,0] / np.max(Y_k_arr[:,0]) - Y_k_arr[:,1] / np.max(Y_k_arr[:,1])) + 1e-6)
-            fitness[popu[0]] = - fitness[popu[0]]
+            fitness[popu[0]] = - fitness[popu[0]] # Only makes the Pareto Points to be positive
 
             chosen_idx = np.argmax(fitness)
             chosen_ref = Y_k_arr[chosen_idx,:]
-            self.chosen_ref_k[k] = chosen_ref.tolist()
+            self.chosen_ref_k[k] = chosen_ref.tolist() # the reference query_throughput and recall used for normalization
 
             Y_k_arr[:,0] /= chosen_ref[0]
             Y_k_arr[:,1] /= chosen_ref[1]
@@ -434,9 +436,9 @@ class VDTunerSystem(SystemBase):
 def main():
     system = VDTunerSystem(
         vdb_name="milvus",
-        # dataset_name="gist",
+        dataset_name="gist",
         # dataset_name="gist-p-10",
-        dataset_name="gist-p-1",
+        # dataset_name="gist-p-1",
     )
     
     for i in range(100):

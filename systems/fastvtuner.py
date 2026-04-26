@@ -116,10 +116,8 @@ class EHVIBO:
         self.seed = seed
         self.X_init = None
         self.Y_init = None
-
-        self.kernel_init()
     
-    def kernel_init(self,):
+    def make_kernel(self,):
         covar_module1 = MaternKernel(
                 nu=2.5,
                 active_dims=(0),
@@ -127,13 +125,14 @@ class EHVIBO:
             )
         covar_module2 = MaternKernel(
                 nu=2.5,
-                active_dims=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15),
+                # active_dims=(1,2,3,4,5,6,7,8,9,10,11,12,13,14,15),
+                active_dims=tuple(i for i in range(1, self.knob_num)),
                 lengthscale_prior=GammaPrior(3.0, 6.0),
             )
         
         product_covar_module = ProductKernel(covar_module1, covar_module2)
 
-        self.covar_module = ScaleKernel(
+        return ScaleKernel(
             product_covar_module,
             outputscale_prior=GammaPrior(2.0, 0.15),
             )
@@ -178,6 +177,7 @@ class EHVIBO:
             train_y = self.Y_init[..., i : i + 1]
             models.append(SingleTaskGP(
                 self.X_init, train_y,
+                covar_module=self.make_kernel(),
                 outcome_transform = Standardize(m=1)
                 ))
             
@@ -213,6 +213,11 @@ class FastVTunerSystem(SystemBase):
         self.seed = seed
         self.sampled_vdb_engine = None
         self.current_sampled_record = None
+
+        # save the predicted throughput and recall for the new configuration that is derived before testing
+        self.predicted_throughput = 0
+        self.predicted_recall = 0
+
         if sampled_dataset_name is not None:
             self.init_sampled_vdb_engine(sampled_dataset_name)
         torch.manual_seed(seed)
@@ -333,6 +338,10 @@ class FastVTunerSystem(SystemBase):
         fixed_features = dict(zip(fixed_idxs, np.array(self.default_conf)[fixed_idxs]))
         fixed_features[0] = self.vdb_config.get_normalized('index_type', polling_k)
         new_x, ei, new_mean, new_std = self.vbo.recommend(fixed_features, 1)
+
+        # save the predicted tput and recall
+        self.predicted_throughput = float(new_mean[0, 0]* self.chosen_ref_k[polling_k][0])
+        self.predicted_recall = float(new_mean[0, 1]* self.chosen_ref_k[polling_k][1])
 
         self.polling_round_num += 1
 
@@ -547,7 +556,7 @@ def main():
     system = FastVTunerSystem(
         vdb_name="milvus",
         dataset_name="gist",
-        sampled_dataset_name="gist-p-1",
+        sampled_dataset_name="gist-p-10",
     )
     
     for i in range(100):
