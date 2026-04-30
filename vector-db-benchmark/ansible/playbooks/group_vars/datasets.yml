@@ -1,3 +1,0 @@
-# you can populate this file running a command from project root (yq should be installed):
-# yq -p json -o=yaml datasets/datasets.json >> ansible/playbooks/group_vars/datasets.yml
-datasets:

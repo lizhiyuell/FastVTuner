@@ -1,4 +1,0 @@
-numpy>=2.2.5
-requests>=2.32.3
-tqdm>=4.67.1
-qdrant-client>=1.14.0
