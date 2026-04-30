@@ -177,7 +177,7 @@ class EHVIBO:
             train_y = self.Y_init[..., i : i + 1]
             models.append(SingleTaskGP(
                 self.X_init, train_y,
-                covar_module=self.make_kernel(),
+                # covar_module=self.make_kernel(),
                 outcome_transform = Standardize(m=1)
                 ))
             

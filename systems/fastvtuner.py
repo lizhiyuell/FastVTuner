@@ -177,7 +177,7 @@ class EHVIBO:
             train_y = self.Y_init[..., i : i + 1]
             models.append(SingleTaskGP(
                 self.X_init, train_y,
-                covar_module=self.make_kernel(),
+                # covar_module=self.make_kernel(),
                 outcome_transform = Standardize(m=1)
                 ))
             
@@ -197,7 +197,11 @@ class FastVTunerSystem(SystemBase):
         single_tune_query_ratio=1.0,
         single_test_query_ratio=1.0,
         sampled_dataset_name=None,
-        seed=1206
+        seed=1206,
+        min_recall_boundary=0.7,
+        max_recall_boundary=1.0,
+        recall_slot=5,
+        balance=2,
     ):
         super().__init__(
             vdb_name=vdb_name,
@@ -213,10 +217,18 @@ class FastVTunerSystem(SystemBase):
         self.seed = seed
         self.sampled_vdb_engine = None
         self.current_sampled_record = None
-
-        # save the predicted throughput and recall for the new configuration that is derived before testing
-        self.predicted_throughput = None
-        self.predicted_recall = None
+        self.current_skip_full_test = False
+        self.current_full_test_recall = None
+        self.min_recall_boundary = min_recall_boundary
+        self.max_recall_boundary = max_recall_boundary
+        self.recall_slot = recall_slot
+        self.balance = balance
+        if self.recall_slot <= 0:
+            raise ValueError("recall_slot must be positive")
+        if self.balance < 0:
+            raise ValueError("balance must not be negative")
+        if self.max_recall_boundary <= self.min_recall_boundary:
+            raise ValueError("max_recall_boundary must be greater than min_recall_boundary")
 
         if sampled_dataset_name is not None:
             self.init_sampled_vdb_engine(sampled_dataset_name)
@@ -235,6 +247,9 @@ class FastVTunerSystem(SystemBase):
 
         self.X = {key: [] for key in self.polling_index.keys()}
         self.Y = {key: [] for key in self.polling_index.keys()}
+        self.recall_slot_counts = {
+            key: [0] * self.recall_slot for key in self.polling_index.keys()
+        }
 
         self.remain_types = list(self.polling_index.keys())
         self.polling_round_num = 0
@@ -256,12 +271,14 @@ class FastVTunerSystem(SystemBase):
 
             self.vdb_config.set_original_param(param_original)
 
-            # run the exp with default configurations
-            self._run_sampled_test()
+            # Initial points must be real full tests and do not use sampled filtering.
+            self.current_sampled_record = None
+            self.current_skip_full_test = False
             self.vdb_engine.start()
             res_record = self.single_tune()
             self.single_test()
             self.vdb_engine.stop()
+            self._update_recall_slot_count(k, self.current_full_test_recall)
 
             self.X[k].append(self.vdb_config.get_normalized_param())
             self.Y[k].append([
@@ -270,6 +287,7 @@ class FastVTunerSystem(SystemBase):
                 res_record.query_latency
             ])
 
+        self.current_skip_full_test = False
         self.update_model()
 
     def init_sampled_vdb_engine(self, sampled_dataset_name):
@@ -285,10 +303,16 @@ class FastVTunerSystem(SystemBase):
         # the new_x is an array of parameter array, we detach it
         self.vdb_config.set_normalized_param(new_x[0])
         self._run_sampled_test()
-        self.vdb_engine.start()
-        res_record = self.single_tune()
-        self.single_test()
-        self.vdb_engine.stop()
+        self.current_skip_full_test = self._should_skip_full_test(polling_k)
+        if self.current_skip_full_test:
+            res_record = self.single_tune()
+            self.single_test()
+        else:
+            self.vdb_engine.start()
+            res_record = self.single_tune()
+            self.single_test()
+            self.vdb_engine.stop()
+            self._update_recall_slot_count(polling_k, self.current_full_test_recall)
 
         self.X[polling_k].append(self.vdb_config.get_normalized_param())
         self.Y[polling_k].append([
@@ -297,6 +321,7 @@ class FastVTunerSystem(SystemBase):
             res_record.query_latency
         ])
         
+        self.current_skip_full_test = False
         self.update_model()
 
     def reward_transform(self,):
@@ -338,10 +363,6 @@ class FastVTunerSystem(SystemBase):
         fixed_features = dict(zip(fixed_idxs, np.array(self.default_conf)[fixed_idxs]))
         fixed_features[0] = self.vdb_config.get_normalized('index_type', polling_k)
         new_x, ei, new_mean, new_std = self.vbo.recommend(fixed_features, 1)
-
-        # save the predicted tput and recall
-        self.predicted_throughput = float(new_mean[0, 0]* self.chosen_ref_k[polling_k][0])
-        self.predicted_recall = float(new_mean[0, 1]* self.chosen_ref_k[polling_k][1])
 
         self.polling_round_num += 1
 
@@ -392,6 +413,33 @@ class FastVTunerSystem(SystemBase):
 
         self.current_sampled_record = self._test_on_sampled_dataset()
 
+    def _get_recall_slot(self, recall):
+        if recall is None:
+            return None
+        if recall < self.min_recall_boundary or recall > self.max_recall_boundary:
+            return None
+
+        width = (self.max_recall_boundary - self.min_recall_boundary) / self.recall_slot
+        slot = int((recall - self.min_recall_boundary) / width)
+        return min(slot, self.recall_slot - 1)
+
+    def _should_skip_full_test(self, index_type):
+        if self.current_sampled_record is None:
+            return False
+
+        sampled_recall = self.current_sampled_record["recall"]
+        slot = self._get_recall_slot(sampled_recall)
+        if slot is None:
+            return True
+
+        counts = self.recall_slot_counts[index_type]
+        return counts[slot] - min(counts) >= self.balance
+
+    def _update_recall_slot_count(self, index_type, recall):
+        slot = self._get_recall_slot(recall)
+        if slot is not None:
+            self.recall_slot_counts[index_type][slot] += 1
+
     def _test_on_sampled_dataset(self):
         sampled_record = {
             "sampled_step_id": self._step_id + 1,
@@ -430,7 +478,7 @@ class FastVTunerSystem(SystemBase):
 
         return sampled_record
 
-    def _build_extra_record(self, include_prediction=False):
+    def _build_extra_record(self):
         extra = {}
 
         if self.current_sampled_record is not None:
@@ -443,16 +491,33 @@ class FastVTunerSystem(SystemBase):
                 "sampled_query_latency": self.current_sampled_record["query_latency"],
             })
 
-        if include_prediction and self.predicted_throughput is not None and self.predicted_recall is not None:
-            extra.update({
-                "predicted_throughput": self.predicted_throughput,
-                "predicted_recall": self.predicted_recall,
-            })
-
         return extra
 
     def _single_tune_impl(self):
         self._step_id = self._step_id + 1
+        if self.current_skip_full_test:
+            return TuningRecord(
+                step_id=self._step_id,
+                phase="tune",
+                dataset_name=self.dataset_name,
+                build_parallel=BUILD_PARALLEL,
+                search_parallel=SEARCH_PARALLEL,
+                params=dict(
+                    zip(
+                        self.vdb_config.param_names,
+                        self.vdb_config.get_original_param(),
+                    )
+                ),
+                index_time=0.0,
+                query_time=0.0,
+                recall=0,
+                record_nr=0,
+                query_throughput=0.0,
+                query_latency=0.0,
+                skip=True,
+                extra=self._build_extra_record(),
+            )
+
         print(f"[FastVTuner] round {self._step_id}: start build", flush=True)
         try:
             build_time = self.vdb_engine.build()
@@ -483,15 +548,38 @@ class FastVTunerSystem(SystemBase):
             ),
             index_time=build_time,
             query_time=query_time,
-            recall=recall,
+            recall=recall if self.current_sampled_record is None else self.current_sampled_record["recall"],
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
-            extra=self._build_extra_record(include_prediction=True),
+            extra=self._build_extra_record(),
         )
 
     # in case of failed building
     def _single_test_impl(self):
+        if self.current_skip_full_test:
+            return TuningRecord(
+                step_id=self._step_id,
+                phase="test",
+                dataset_name=self.dataset_name,
+                build_parallel=BUILD_PARALLEL,
+                search_parallel=SEARCH_PARALLEL,
+                params=dict(
+                    zip(
+                        self.vdb_config.param_names,
+                        self.vdb_config.get_original_param(),
+                    )
+                ),
+                index_time=0.0,
+                query_time=0.0,
+                recall=0,
+                record_nr=0,
+                query_throughput=0.0,
+                query_latency=0.0,
+                skip=True,
+                extra=self._build_extra_record(),
+            )
+
         print(f"[FastVTuner] round {self._step_id}: start test", flush=True)
         try:
             query_time, recall, query_count = self.vdb_engine.query(
@@ -505,6 +593,7 @@ class FastVTunerSystem(SystemBase):
             query_time, recall, query_count = 0, 0, 0
             query_throughput = 0
             query_latency = 0
+        self.current_full_test_recall = recall
 
         return TuningRecord(
             step_id=self._step_id,
@@ -520,7 +609,7 @@ class FastVTunerSystem(SystemBase):
             ),
             index_time=0.0,
             query_time=query_time,
-            recall=recall,
+            recall=recall if self.current_sampled_record is None else self.current_sampled_record["recall"],
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,

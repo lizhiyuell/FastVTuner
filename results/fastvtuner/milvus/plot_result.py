@@ -5,7 +5,7 @@ import os
 import matplotlib.pyplot as plt
 
 
-def load_results(filename):
+def load_results(filename, max_step_id=None):
     phase_results = {}
 
     with open(filename, "r") as ifs:
@@ -15,6 +15,10 @@ def load_results(filename):
                 continue
 
             data = json.loads(line)
+            step_id = data.get("step_id")
+            if max_step_id is not None and (step_id is None or int(step_id) > max_step_id):
+                continue
+
             phase = data.get("phase", "unknown")
             tput = data.get("query_throughput")
             recall = data.get("recall")
@@ -112,6 +116,7 @@ def plot_results(all_results, output_file, title):
 def main():
     parser = argparse.ArgumentParser(description="Plot throughput-recall results and Pareto frontier.")
     parser.add_argument("name", help="Dataset prefix, e.g. gist")
+    parser.add_argument("n", nargs="?", type=int, help="Only plot points with step_id <= n")
     args = parser.parse_args()
 
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -121,7 +126,7 @@ def main():
         if not os.path.exists(input_file):
             raise FileNotFoundError(f"File not found: {input_file}")
 
-        phase_results = load_results(input_file)
+        phase_results = load_results(input_file, args.n)
         all_results[phase] = phase_results.get(phase, [])
 
     output_file = os.path.join(base_dir, f"{args.name}_plot.png")
