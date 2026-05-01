@@ -432,8 +432,11 @@ class FastVTunerSystem(SystemBase):
         if slot is None:
             return True
 
-        counts = self.recall_slot_counts[index_type]
-        return counts[slot] - min(counts) >= self.balance
+        # an alturnative simple implementation
+        return False
+
+        # counts = self.recall_slot_counts[index_type]
+        # return counts[slot] - min(counts) >= self.balance
 
     def _update_recall_slot_count(self, index_type, recall):
         slot = self._get_recall_slot(recall)
