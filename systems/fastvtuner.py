@@ -299,24 +299,46 @@ class FastVTunerSystem(SystemBase):
         self._run_sampled_test()
         self.current_skip_full_test = self._should_skip_full_test(polling_k)
         if self.current_skip_full_test:
-            res_record = self.single_tune()
+            self.single_tune()
             self.single_test()
         else:
             self.vdb_engine.start()
-            res_record = self.single_tune()
-            self.single_test()
-            self.vdb_engine.stop()
-            self._update_recall_slot_count(polling_k, self.current_full_test_recall)
+            try:
+                res_record = self.single_tune()
+                self.single_test()
+                self._update_recall_slot_count(polling_k, self.current_full_test_recall)
+                self._append_tuning_result(polling_k, res_record)
+                self.update_model()
 
-        self.X[polling_k].append(self.vdb_config.get_normalized_param())
-        self.Y[polling_k].append([
-            res_record.query_throughput,
-            res_record.recall,
-            res_record.query_latency
-        ])
-        
+                if self._has_search_params(polling_k):
+                    for _ in range(NR_SEARCH_PER_BUILD):
+                        _, new_x = self.rr_polling(search_only=True)
+                        self.vdb_config.set_normalized_param(new_x[0])
+                        self.current_sampled_record = None
+                        self.skip_build = True
+                        search_record = self.single_tune()
+                        self._append_tuning_result(polling_k, search_record)
+                        self.update_model()
+            finally:
+                self.skip_build = False
+                self.vdb_engine.stop()
+
         self.current_skip_full_test = False
-        self.update_model()
+        self.skip_build = False
+
+    def _append_tuning_result(self, index_type, record):
+        self.X[index_type].append(self.vdb_config.get_normalized_param())
+        self.Y[index_type].append([
+            record.query_throughput,
+            record.recall,
+            record.query_latency
+        ])
+
+    def _has_search_params(self, index_type):
+        return any(
+            self.vdb_config.param_meta[idx]["class"] == "searching"
+            for idx in self.polling_index[index_type]
+        )
 
     def reward_transform(self,):
         # to calculate within each index type set
@@ -350,22 +372,28 @@ class FastVTunerSystem(SystemBase):
         self.vbo.update_samples(self.norm_X, self.norm_Y)
 
     def rr_polling(self, search_only=False):
-        polling_idx = self.polling_round_num % len(self.remain_types)
-        polling_k = self.remain_types[polling_idx]
-
         if search_only:
+            index_type_idx = self.vdb_config.get_param_index("index_type")
+            polling_k = self.vdb_config.get_original_param()[index_type_idx]
+            allowed_idxs = [
+                idx for idx in self.polling_index[polling_k]
+                if self.vdb_config.param_meta[idx]["class"] == "searching"
+            ]
             fixed_idxs = [
-                i for i, meta in enumerate(self.vdb_config.param_meta)
-                if meta["class"] != "searching"
+                i for i in range(self.knob_num)
+                if i not in allowed_idxs
             ]
             fixed_features = dict(zip(fixed_idxs, self.vdb_config.get_normalized_param()))
         else:
+            polling_idx = self.polling_round_num % len(self.remain_types)
+            polling_k = self.remain_types[polling_idx]
             fixed_idxs = [i for i in range(self.knob_num) if i not in self.polling_sys+self.polling_index[polling_k]]
             fixed_features = dict(zip(fixed_idxs, np.array(self.default_conf)[fixed_idxs]))
             fixed_features[0] = self.vdb_config.get_normalized('index_type', polling_k)
         new_x, ei, new_mean, new_std = self.vbo.recommend(fixed_features, 1)
 
-        self.polling_round_num += 1
+        if not search_only:
+            self.polling_round_num += 1
 
         return polling_k, new_x
     
