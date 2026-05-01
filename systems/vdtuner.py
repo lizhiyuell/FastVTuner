@@ -214,15 +214,7 @@ class VDTunerSystem(SystemBase):
         random.seed(seed)
 
         # 这个地方需要修改，最好能合并到config的部分中
-        self.polling_sys = [0] + [9,10,11,12,13,14,15]
-        self.polling_index = {
-            'FLAT': [],
-            'IVF_FLAT': [1,2],
-            'IVF_SQ8': [1,2],
-            'IVF_PQ': [1,2,3,4],
-            'HNSW': [5,6,7],
-            'SCANN': [1,2,8],
-        }
+        self.polling_sys, self.polling_index = self.vdb_config.get_polling_params()
 
         self.X = {key: [] for key in self.polling_index.keys()}
         self.Y = {key: [] for key in self.polling_index.keys()}

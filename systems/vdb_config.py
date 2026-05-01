@@ -69,6 +69,8 @@ class VDBConfig:
             meta["type"] = knob_type
             meta["class"] = knob_class
             meta["scale"] = knob_scale
+            if "related_index" in detail:
+                meta["related_index"] = list(detail["related_index"])
             if knob_type == "integer":
                 meta["min"] = detail["min"]
                 meta["max"] = detail["max"]
@@ -143,6 +145,29 @@ class VDBConfig:
 
     def get_param_index(self, param_name):
         return self.param_names.index(param_name)
+
+    def get_polling_params(self):
+        index_meta = self._get_param_meta("index_type")
+        if index_meta["type"] != "enum":
+            raise ValueError("index_type must be an enum parameter")
+
+        polling_sys = []
+        polling_index = {index_type: [] for index_type in index_meta["enum_values"]}
+        for idx, meta in enumerate(self.param_meta):
+            if meta["class"] in ("type", "system"):
+                polling_sys.append(idx)
+                continue
+
+            related_index = meta.get("related_index")
+            if related_index is None:
+                continue
+
+            for index_type in related_index:
+                if index_type not in polling_index:
+                    raise ValueError(f"Unknown related index type: {index_type}")
+                polling_index[index_type].append(idx)
+
+        return polling_sys, polling_index
 
     def get_normalized(self, param_name, param_value):
         meta = self._get_param_meta(param_name)

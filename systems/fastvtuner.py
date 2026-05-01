@@ -40,6 +40,7 @@ from scipy.stats import qmc
 
 
 REF_POINT = torch.tensor([0.5,0.5])
+NR_SEARCH_PER_BUILD = 5
 
 def hypervolume_calcu(all_sol, ref_point=[0,0], opt_max=True):
     rank, f = fast_non_dominated_sort(all_sol)
@@ -219,6 +220,7 @@ class FastVTunerSystem(SystemBase):
         self.current_sampled_record = None
         self.current_skip_full_test = False
         self.current_full_test_recall = None
+        self.skip_build = False
         self.min_recall_boundary = min_recall_boundary
         self.max_recall_boundary = max_recall_boundary
         self.recall_slot = recall_slot
@@ -235,15 +237,7 @@ class FastVTunerSystem(SystemBase):
         torch.manual_seed(seed)
         random.seed(seed)
 
-        self.polling_sys = [0] + [9,10,11,12,13,14,15]
-        self.polling_index = {
-            'FLAT': [],
-            'IVF_FLAT': [1,2],
-            'IVF_SQ8': [1,2],
-            'IVF_PQ': [1,2,3,4],
-            'HNSW': [5,6,7],
-            'SCANN': [1,2,8],
-        }
+        self.polling_sys, self.polling_index = self.vdb_config.get_polling_params()
 
         self.X = {key: [] for key in self.polling_index.keys()}
         self.Y = {key: [] for key in self.polling_index.keys()}
@@ -355,13 +349,20 @@ class FastVTunerSystem(SystemBase):
         self.reward_transform()
         self.vbo.update_samples(self.norm_X, self.norm_Y)
 
-    def rr_polling(self,):
+    def rr_polling(self, search_only=False):
         polling_idx = self.polling_round_num % len(self.remain_types)
         polling_k = self.remain_types[polling_idx]
 
-        fixed_idxs = [i for i in range(self.knob_num) if i not in self.polling_sys+self.polling_index[polling_k]]
-        fixed_features = dict(zip(fixed_idxs, np.array(self.default_conf)[fixed_idxs]))
-        fixed_features[0] = self.vdb_config.get_normalized('index_type', polling_k)
+        if search_only:
+            fixed_idxs = [
+                i for i, meta in enumerate(self.vdb_config.param_meta)
+                if meta["class"] != "searching"
+            ]
+            fixed_features = dict(zip(fixed_idxs, self.vdb_config.get_normalized_param()))
+        else:
+            fixed_idxs = [i for i in range(self.knob_num) if i not in self.polling_sys+self.polling_index[polling_k]]
+            fixed_features = dict(zip(fixed_idxs, np.array(self.default_conf)[fixed_idxs]))
+            fixed_features[0] = self.vdb_config.get_normalized('index_type', polling_k)
         new_x, ei, new_mean, new_std = self.vbo.recommend(fixed_features, 1)
 
         self.polling_round_num += 1
@@ -481,7 +482,7 @@ class FastVTunerSystem(SystemBase):
 
         return sampled_record
 
-    def _build_extra_record(self):
+    def _build_extra_record(self, search_only=False):
         extra = {}
 
         if self.current_sampled_record is not None:
@@ -494,6 +495,7 @@ class FastVTunerSystem(SystemBase):
                 "sampled_query_latency": self.current_sampled_record["query_latency"],
             })
 
+        extra["search_only"] = search_only
         return extra
 
     def _single_tune_impl(self):
@@ -518,12 +520,15 @@ class FastVTunerSystem(SystemBase):
                 query_throughput=0.0,
                 query_latency=0.0,
                 skip=True,
-                extra=self._build_extra_record(),
+                extra=self._build_extra_record(search_only=self.skip_build),
             )
 
-        print(f"[FastVTuner] round {self._step_id}: start build", flush=True)
+        print(f"[FastVTuner] round {self._step_id}: start tune", flush=True)
         try:
-            build_time = self.vdb_engine.build()
+            if self.skip_build:
+                build_time = 0
+            else:
+                build_time = self.vdb_engine.build()
             query_time, recall, query_count = self.vdb_engine.query(
                 self._top_k,
                 test=False,
@@ -555,7 +560,7 @@ class FastVTunerSystem(SystemBase):
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
-            extra=self._build_extra_record(),
+            extra=self._build_extra_record(search_only=self.skip_build),
         )
 
     # in case of failed building

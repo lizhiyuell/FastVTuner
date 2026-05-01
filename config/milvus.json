@@ -19,7 +19,13 @@
     "scale": "linear",
     "default": 640,
     "min": 1,
-    "max": 10000
+    "max": 10000,
+    "related_index": [
+      "IVF_FLAT",
+      "IVF_SQ8",
+      "IVF_PQ",
+      "SCANN"
+    ]
   },
   "nprobe": {
     "class": "searching",
@@ -27,7 +33,13 @@
     "scale": "linear",
     "default": 80,
     "min": 1,
-    "max": 10000
+    "max": 10000,
+    "related_index": [
+      "IVF_FLAT",
+      "IVF_SQ8",
+      "IVF_PQ",
+      "SCANN"
+    ]
   },
   "m": {
     "class": "building",
@@ -63,6 +75,9 @@
       320,
       480,
       960
+    ],
+    "related_index": [
+      "IVF_PQ"
     ]
   },
   "nbits": {
@@ -71,7 +86,10 @@
     "scale": "constant",
     "default": 8,
     "min": 1,
-    "max": 10
+    "max": 10,
+    "related_index": [
+      "IVF_PQ"
+    ]
   },
   "M": {
     "class": "building",
@@ -79,7 +97,10 @@
     "scale": "constant",
     "default": 32,
     "min": 4,
-    "max": 64
+    "max": 64,
+    "related_index": [
+      "HNSW"
+    ]
   },
   "efConstruction": {
     "class": "building",
@@ -87,7 +108,10 @@
     "scale": "constant",
     "default": 256,
     "min": 8,
-    "max": 512
+    "max": 512,
+    "related_index": [
+      "HNSW"
+    ]
   },
   "ef": {
     "class": "searching",
@@ -95,7 +119,10 @@
     "scale": "constant",
     "default": 500,
     "min": 10,
-    "max": 10000
+    "max": 10000,
+    "related_index": [
+      "HNSW"
+    ]
   },
   "reorder_k": {
     "class": "searching",
@@ -103,7 +130,10 @@
     "scale": "constant",
     "default": 500,
     "min": 100,
-    "max": 1000
+    "max": 1000,
+    "related_index": [
+      "SCANN"
+    ]
   },
   "dataCoord*segment*maxSize": {
     "class": "system",
