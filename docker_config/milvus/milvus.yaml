@@ -90,9 +90,9 @@ dataCoord:
     maxBinlogFileNumber: 32
     maxIdleTime: 600
     maxLife: 86400
-    maxSize: 6768
+    maxSize: 10000
     minSizeFromIdleToSealed: 16
-    sealProportion: 0.34
+    sealProportion: 0.83
     smallProportion: 0.50
 dataNode:
   dataSync:
@@ -113,7 +113,7 @@ dataNode:
   port: 21124
   segment:
     deleteBufBytes: 67108864
-    insertBufSize: 1000
+    insertBufSize: 10000000000
     syncPeriod: 600
   timetick:
     byRPC: true
@@ -422,7 +422,7 @@ rootCoord:
   importTaskRetention: 86400
   maxDatabaseNum: 64
   maxPartitionNum: 4096
-  minSegmentSizeToEnableIndex: 2332
+  minSegmentSizeToEnableIndex: 10000
   port: 53100
 tls:
   caPemPath: configs/cert/ca.pem
