@@ -31,6 +31,7 @@ from botorch.utils.multi_objective.box_decompositions.non_dominated import (
 from botorch.acquisition.multi_objective.logei import (
     qLogExpectedHypervolumeImprovement,
 )
+from botorch.acquisition.multi_objective.objective import MCMultiOutputObjective
 from gpytorch.kernels.scale_kernel import ScaleKernel
 from gpytorch.kernels.matern_kernel import MaternKernel
 from gpytorch.kernels import ProductKernel
@@ -43,6 +44,25 @@ REF_POINT = torch.tensor([0.5,0.5])
 NR_SEARCH_PER_BUILD = 5
 MIN_SAMPLED_RECALL_FOR_FULL_TEST = 0.7
 MAX_SAMPLED_RECALL_FOR_FULL_TEST = 1.0
+SAMPLED_RECALL_BLEND_INITIAL_WEIGHT = 0.7
+SAMPLED_RECALL_BLEND_MIN_WEIGHT = 0.05
+SAMPLED_RECALL_BLEND_DECAY_STEPS = 30.0
+
+
+class BlendedRecallObjective(MCMultiOutputObjective):
+    def __init__(self, sampled_recall_weight):
+        super().__init__()
+        self.sampled_recall_weight = sampled_recall_weight
+
+    def forward(self, samples, X=None):
+        tput = samples[..., 0:1]
+        full_recall = samples[..., 1:2]
+        sampled_recall = samples[..., 2:3]
+        recall = (
+            (1.0 - self.sampled_recall_weight) * full_recall
+            + self.sampled_recall_weight * sampled_recall
+        )
+        return torch.cat([tput, recall], dim=-1)
 
 def hypervolume_calcu(all_sol, ref_point=[0,0], opt_max=True):
     rank, f = fast_non_dominated_sort(all_sol)
@@ -140,13 +160,18 @@ class EHVIBO:
             outputscale_prior=GammaPrior(2.0, 0.15),
             )
     
-    def recommend(self, fixed_features, q, inequality_constraints=None):
+    def recommend(self, fixed_features, q, inequality_constraints=None, sampled_recall_weight=0.0):
         # assume 2-dim output: [fitness, recall]
         
         qehvi_sampler = SobolQMCNormalSampler(sample_shape=torch.Size([128]))
+        objective = None
+        if self.has_sampled_recall_model:
+            objective = BlendedRecallObjective(sampled_recall_weight)
 
         with torch.no_grad():
             pred = self.model.posterior(self.X_init).mean
+            if objective is not None:
+                pred = objective(pred)
 
         partitioning = FastNondominatedPartitioning(ref_point=REF_POINT, Y=pred,)
         
@@ -155,6 +180,7 @@ class EHVIBO:
             ref_point=REF_POINT,
             partitioning=partitioning,
             sampler=qehvi_sampler,
+            objective=objective,
         )
 
         candidate, ei = optimize_acqf(
@@ -171,9 +197,10 @@ class EHVIBO:
 
         return new_x.numpy(), ei.item(), new_x_mean.numpy(), new_x_std.numpy()
     
-    def update_samples(self, X, Y,):
+    def update_samples(self, X, Y, sampled_X=None, sampled_Y=None):
         self.X_init = torch.tensor(X,dtype=torch.float64)
         self.Y_init = torch.tensor(Y,dtype=torch.float64)
+        self.has_sampled_recall_model = sampled_X is not None and sampled_Y is not None and len(sampled_X) > 0
         models = []
         self.stands = []
 
@@ -182,6 +209,14 @@ class EHVIBO:
             models.append(SingleTaskGP(
                 self.X_init, train_y,
                 # covar_module=self.make_kernel(),
+                outcome_transform = Standardize(m=1)
+                ))
+
+        if self.has_sampled_recall_model:
+            sampled_X_init = torch.tensor(sampled_X,dtype=torch.float64)
+            sampled_Y_init = torch.tensor(sampled_Y,dtype=torch.float64)
+            models.append(SingleTaskGP(
+                sampled_X_init, sampled_Y_init,
                 outcome_transform = Standardize(m=1)
                 ))
             
@@ -229,6 +264,7 @@ class FastVTunerSystem(SystemBase):
 
         self.X = {key: [] for key in self.polling_index.keys()}
         self.Y = {key: [] for key in self.polling_index.keys()}
+        self.sampled_recall_records = []
 
         self.remain_types = list(self.polling_index.keys())
         self.polling_round_num = 0
@@ -281,10 +317,12 @@ class FastVTunerSystem(SystemBase):
         # the new_x is an array of parameter array, we detach it
         self.vdb_config.set_normalized_param(new_x[0])
         self._run_sampled_test()
+        self._append_sampled_recall_result(polling_k)
         self.current_skip_full_test = self._should_skip_full_test()
         if self.current_skip_full_test:
             self.single_tune()
             self.single_test()
+            self.update_model()
         else:
             self.vdb_engine.start()
             try:
@@ -316,6 +354,17 @@ class FastVTunerSystem(SystemBase):
             record.recall,
             record.query_latency
         ])
+
+    def _append_sampled_recall_result(self, index_type):
+        if self.current_sampled_record is None:
+            return
+        self.sampled_recall_records.append(
+            {
+                "index_type": index_type,
+                "x": self.vdb_config.get_normalized_param(),
+                "recall": self.current_sampled_record["recall"],
+            }
+        )
 
     def _has_search_params(self, index_type):
         return any(
@@ -350,9 +399,39 @@ class FastVTunerSystem(SystemBase):
         self.norm_X = [j for item in self.X.values() for j in item]
         self.norm_Y = Y
 
+    def get_normalized_sampled_recall_records(self):
+        sampled_X = []
+        sampled_Y = []
+        for record in self.sampled_recall_records:
+            recall = record["recall"]
+            if recall is None:
+                continue
+
+            index_type = record["index_type"]
+            chosen_ref = self.chosen_ref_k.get(index_type)
+            if chosen_ref is None:
+                continue
+
+            recall_ref = chosen_ref[1]
+            if not np.isfinite(recall_ref) or recall_ref == 0:
+                recall_ref = 1.0
+
+            sampled_X.append(record["x"])
+            sampled_Y.append([float(recall) / recall_ref])
+        return sampled_X, sampled_Y
+
+    def get_sampled_recall_blend_weight(self):
+        step = max(self._step_id, 0)
+        decay = np.exp(-step / SAMPLED_RECALL_BLEND_DECAY_STEPS)
+        return (
+            SAMPLED_RECALL_BLEND_MIN_WEIGHT
+            + (SAMPLED_RECALL_BLEND_INITIAL_WEIGHT - SAMPLED_RECALL_BLEND_MIN_WEIGHT) * decay
+        )
+
     def update_model(self,):
         self.reward_transform()
-        self.vbo.update_samples(self.norm_X, self.norm_Y)
+        sampled_X, sampled_Y = self.get_normalized_sampled_recall_records()
+        self.vbo.update_samples(self.norm_X, self.norm_Y, sampled_X, sampled_Y)
 
     def _build_inequality_constraints(self, fixed_features):
         constraints = []
@@ -391,6 +470,7 @@ class FastVTunerSystem(SystemBase):
             fixed_features,
             1,
             inequality_constraints=inequality_constraints,
+            sampled_recall_weight=self.get_sampled_recall_blend_weight(),
         )
 
         if not search_only:
