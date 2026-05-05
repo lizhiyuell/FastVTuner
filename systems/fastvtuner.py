@@ -138,7 +138,7 @@ class EHVIBO:
             outputscale_prior=GammaPrior(2.0, 0.15),
             )
     
-    def recommend(self, fixed_features, q):
+    def recommend(self, fixed_features, q, inequality_constraints=None):
         # assume 2-dim output: [fitness, recall]
         
         qehvi_sampler = SobolQMCNormalSampler(sample_shape=torch.Size([128]))
@@ -158,6 +158,7 @@ class EHVIBO:
         candidate, ei = optimize_acqf(
             acq_func, bounds=self.bounds, q=q, num_restarts=10, raw_samples=100, 
             fixed_features=fixed_features, 
+            inequality_constraints=inequality_constraints,
             options={'seed':self.seed}
             )
         new_x = candidate.detach()
@@ -371,6 +372,18 @@ class FastVTunerSystem(SystemBase):
         self.reward_transform()
         self.vbo.update_samples(self.norm_X, self.norm_Y)
 
+    def _build_inequality_constraints(self, fixed_features):
+        constraints = []
+        for indices, weights, rhs in self.vdb_config.get_inequality_constraints(fixed_features):
+            constraints.append(
+                (
+                    torch.tensor(indices, dtype=torch.long),
+                    torch.tensor(weights, dtype=torch.float64),
+                    float(rhs),
+                )
+            )
+        return constraints
+
     def rr_polling(self, search_only=False):
         if search_only:
             index_type_idx = self.vdb_config.get_param_index("index_type")
@@ -391,7 +404,12 @@ class FastVTunerSystem(SystemBase):
             fixed_idxs = [i for i in range(self.knob_num) if i not in self.polling_sys+self.polling_index[polling_k]]
             fixed_features = dict(zip(fixed_idxs, np.array(self.default_conf)[fixed_idxs]))
             fixed_features[0] = self.vdb_config.get_normalized('index_type', polling_k)
-        new_x, ei, new_mean, new_std = self.vbo.recommend(fixed_features, 1)
+        inequality_constraints = self._build_inequality_constraints(fixed_features)
+        new_x, ei, new_mean, new_std = self.vbo.recommend(
+            fixed_features,
+            1,
+            inequality_constraints=inequality_constraints,
+        )
 
         if not search_only:
             self.polling_round_num += 1

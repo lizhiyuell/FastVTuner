@@ -69,6 +69,8 @@ class VDBConfig:
             meta["type"] = knob_type
             meta["class"] = knob_class
             meta["scale"] = knob_scale
+            if "constrain" in detail:
+                meta["constrain"] = detail["constrain"]
             if "related_index" in detail:
                 meta["related_index"] = list(detail["related_index"])
             if knob_type == "integer":
@@ -149,6 +151,69 @@ class VDBConfig:
 
     def get_param_index(self, param_name):
         return self.param_names.index(param_name)
+
+    def _param_range(self, meta):
+        if meta["type"] not in ("integer", "float"):
+            raise ValueError(f"Constraint parameter `{meta['name']}` must be numeric")
+        return float(meta["max"]) - float(meta["min"])
+
+    def _parse_constrain(self, param_name, constrain):
+        constrain = str(constrain).strip()
+        for op in ("<=", ">="):
+            if constrain.startswith(op):
+                other_name = constrain[len(op):].strip()
+                if not other_name:
+                    raise ValueError(f"Invalid constrain for `{param_name}`: {constrain}")
+                if other_name not in self.param_names:
+                    raise ValueError(f"Unknown constrain parameter `{other_name}`")
+                return op, other_name
+        raise ValueError(f"Unsupported constrain for `{param_name}`: {constrain}")
+
+    def get_inequality_constraints(self, fixed_features=None):
+        fixed_features = fixed_features or {}
+        constraints = []
+
+        for left_idx, left_meta in enumerate(self.param_meta):
+            constrain = left_meta.get("constrain")
+            if constrain is None:
+                continue
+
+            op, right_name = self._parse_constrain(left_meta["name"], constrain)
+            right_idx = self.get_param_index(right_name)
+            right_meta = self.param_meta[right_idx]
+
+            left_range = self._param_range(left_meta)
+            right_range = self._param_range(right_meta)
+            left_min = float(left_meta["min"])
+            right_min = float(right_meta["min"])
+
+            if op == "<=":
+                coeffs = {
+                    right_idx: right_range,
+                    left_idx: -left_range,
+                }
+                rhs = left_min - right_min
+            else:
+                coeffs = {
+                    left_idx: left_range,
+                    right_idx: -right_range,
+                }
+                rhs = right_min - left_min
+
+            fixed_sum = 0.0
+            indices = []
+            weights = []
+            for idx, weight in coeffs.items():
+                if idx in fixed_features:
+                    fixed_sum += weight * float(fixed_features[idx])
+                else:
+                    indices.append(idx)
+                    weights.append(weight)
+
+            if indices:
+                constraints.append((indices, weights, rhs - fixed_sum))
+
+        return constraints
 
     def get_polling_params(self):
         index_meta = self._get_param_meta("index_type")
