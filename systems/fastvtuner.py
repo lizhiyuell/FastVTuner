@@ -41,6 +41,8 @@ from scipy.stats import qmc
 
 REF_POINT = torch.tensor([0.5,0.5])
 NR_SEARCH_PER_BUILD = 5
+MIN_SAMPLED_RECALL_FOR_FULL_TEST = 0.7
+MAX_SAMPLED_RECALL_FOR_FULL_TEST = 1.0
 
 def hypervolume_calcu(all_sol, ref_point=[0,0], opt_max=True):
     rank, f = fast_non_dominated_sort(all_sol)
@@ -200,10 +202,6 @@ class FastVTunerSystem(SystemBase):
         single_test_query_ratio=1.0,
         sampled_dataset_name=None,
         seed=1206,
-        min_recall_boundary=0.7,
-        max_recall_boundary=1.0,
-        recall_slot=5,
-        balance=2,
     ):
         super().__init__(
             vdb_name=vdb_name,
@@ -220,18 +218,7 @@ class FastVTunerSystem(SystemBase):
         self.sampled_vdb_engine = None
         self.current_sampled_record = None
         self.current_skip_full_test = False
-        self.current_full_test_recall = None
         self.skip_build = False
-        self.min_recall_boundary = min_recall_boundary
-        self.max_recall_boundary = max_recall_boundary
-        self.recall_slot = recall_slot
-        self.balance = balance
-        if self.recall_slot <= 0:
-            raise ValueError("recall_slot must be positive")
-        if self.balance < 0:
-            raise ValueError("balance must not be negative")
-        if self.max_recall_boundary <= self.min_recall_boundary:
-            raise ValueError("max_recall_boundary must be greater than min_recall_boundary")
 
         if sampled_dataset_name is not None:
             self.init_sampled_vdb_engine(sampled_dataset_name)
@@ -242,9 +229,6 @@ class FastVTunerSystem(SystemBase):
 
         self.X = {key: [] for key in self.polling_index.keys()}
         self.Y = {key: [] for key in self.polling_index.keys()}
-        self.recall_slot_counts = {
-            key: [0] * self.recall_slot for key in self.polling_index.keys()
-        }
 
         self.remain_types = list(self.polling_index.keys())
         self.polling_round_num = 0
@@ -273,7 +257,6 @@ class FastVTunerSystem(SystemBase):
             res_record = self.single_tune()
             self.single_test()
             self.vdb_engine.stop()
-            self._update_recall_slot_count(k, self.current_full_test_recall)
 
             self.X[k].append(self.vdb_config.get_normalized_param())
             self.Y[k].append([
@@ -298,7 +281,7 @@ class FastVTunerSystem(SystemBase):
         # the new_x is an array of parameter array, we detach it
         self.vdb_config.set_normalized_param(new_x[0])
         self._run_sampled_test()
-        self.current_skip_full_test = self._should_skip_full_test(polling_k)
+        self.current_skip_full_test = self._should_skip_full_test()
         if self.current_skip_full_test:
             self.single_tune()
             self.single_test()
@@ -307,7 +290,6 @@ class FastVTunerSystem(SystemBase):
             try:
                 res_record = self.single_tune()
                 self.single_test()
-                self._update_recall_slot_count(polling_k, self.current_full_test_recall)
                 self._append_tuning_result(polling_k, res_record)
                 self.update_model()
 
@@ -461,35 +443,20 @@ class FastVTunerSystem(SystemBase):
 
         self.current_sampled_record = self._test_on_sampled_dataset()
 
-    def _get_recall_slot(self, recall):
-        if recall is None:
-            return None
-        if recall < self.min_recall_boundary or recall > self.max_recall_boundary:
-            return None
-
-        width = (self.max_recall_boundary - self.min_recall_boundary) / self.recall_slot
-        slot = int((recall - self.min_recall_boundary) / width)
-        return min(slot, self.recall_slot - 1)
-
-    def _should_skip_full_test(self, index_type):
+    def _should_skip_full_test(self):
         if self.current_sampled_record is None:
             return False
 
         sampled_recall = self.current_sampled_record["recall"]
-        slot = self._get_recall_slot(sampled_recall)
-        if slot is None:
+        if (
+            sampled_recall is None
+            or sampled_recall < MIN_SAMPLED_RECALL_FOR_FULL_TEST
+            or sampled_recall > MAX_SAMPLED_RECALL_FOR_FULL_TEST
+        ):
             return True
 
         # an alturnative simple implementation
         return False
-
-        # counts = self.recall_slot_counts[index_type]
-        # return counts[slot] - min(counts) >= self.balance
-
-    def _update_recall_slot_count(self, index_type, recall):
-        slot = self._get_recall_slot(recall)
-        if slot is not None:
-            self.recall_slot_counts[index_type][slot] += 1
 
     def _test_on_sampled_dataset(self):
         sampled_record = {
@@ -648,8 +615,6 @@ class FastVTunerSystem(SystemBase):
             query_time, recall, query_count = 0, 0, 0
             query_throughput = 0
             query_latency = 0
-        self.current_full_test_recall = recall
-
         return TuningRecord(
             step_id=self._step_id,
             phase="test",
