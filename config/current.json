@@ -8,7 +8,7 @@
     "parallel": 20,
     "config": {
       "nprobe": 80,
-      "ef": 7915,
+      "ef": 10,
       "reorder_k": 500
     }
   },
@@ -18,8 +18,8 @@
       "nlist": 640,
       "m": 120,
       "nbits": 8,
-      "M": 33,
-      "efConstruction": 512
+      "M": 64,
+      "efConstruction": 8
     }
   }
 }

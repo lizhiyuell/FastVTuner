@@ -105,8 +105,10 @@ class VDBConfig:
                     / (float(meta["max"]) - float(meta["min"]))
                 )
             elif meta["type"] == "enum":
+                enum_size = len(meta["enum_values"])
+                denom = max(enum_size - 1, 1)
                 self.normalized_parameter.append(
-                    meta["enum_values"].index(param_value) / len(meta["enum_values"])
+                    meta["enum_values"].index(param_value) / denom
                 )
             else:
                 raise ValueError(f"Unsupported knob type: {meta['type']}")
@@ -125,7 +127,9 @@ class VDBConfig:
                 )
             elif meta["type"] == "enum":
                 enum_size = len(meta["enum_values"])
-                enum_index = int(enum_size * float(param_value))
+                denom = max(enum_size - 1, 1)
+                enum_index = round(denom * float(param_value))
+                enum_index = max(0, enum_index)
                 enum_index = min(enum_size - 1, enum_index)
                 self.current_params.append(meta["enum_values"][enum_index])
             else:
@@ -180,7 +184,9 @@ class VDBConfig:
                 / (float(meta["max"]) - float(meta["min"]))
             )
         if meta["type"] == "enum":
-            return meta["enum_values"].index(param_value) / len(meta["enum_values"])
+            enum_size = len(meta["enum_values"])
+            denom = max(enum_size - 1, 1)
+            return meta["enum_values"].index(param_value) / denom
 
         raise ValueError(f"Unsupported knob type: {meta['type']}")
 
@@ -196,7 +202,9 @@ class VDBConfig:
             )
         if meta["type"] == "enum":
             enum_size = len(meta["enum_values"])
-            enum_index = int(enum_size * float(param_value))
+            denom = max(enum_size - 1, 1)
+            enum_index = round(denom * float(param_value))
+            enum_index = max(0, enum_index)
             enum_index = min(enum_size - 1, enum_index)
             return meta["enum_values"][enum_index]
 

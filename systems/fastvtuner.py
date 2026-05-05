@@ -383,7 +383,8 @@ class FastVTunerSystem(SystemBase):
                 i for i in range(self.knob_num)
                 if i not in allowed_idxs
             ]
-            fixed_features = dict(zip(fixed_idxs, self.vdb_config.get_normalized_param()))
+            current = self.vdb_config.get_normalized_param()
+            fixed_features = {idx: current[idx] for idx in fixed_idxs}
         else:
             polling_idx = self.polling_round_num % len(self.remain_types)
             polling_k = self.remain_types[polling_idx]
@@ -655,11 +656,12 @@ class FastVTunerSystem(SystemBase):
 def main():
     system = FastVTunerSystem(
         vdb_name="milvus",
+        # dataset_name="gist-p-1",
         dataset_name="gist",
         sampled_dataset_name="gist-p-10",
     )
     
-    for i in range(100):
+    for i in range(65):
         system.step()
 
 

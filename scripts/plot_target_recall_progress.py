@@ -44,7 +44,9 @@ def load_records(result_file):
             if not line:
                 continue
             try:
-                records.append(json.loads(line))
+                record = json.loads(line)
+                record["_line_nr"] = line_nr
+                records.append(record)
             except json.JSONDecodeError as exc:
                 raise ValueError(f"Invalid JSON in {result_file}:{line_nr}") from exc
     return records
@@ -53,6 +55,7 @@ def load_records(result_file):
 def build_curve(records, target):
     xs = []
     ys = []
+    turns = []
     total_time = 0.0
     best_tput = None
 
@@ -64,12 +67,26 @@ def build_curve(records, target):
         if recall is not None and tput is not None and recall >= target:
             if best_tput is None or tput > best_tput:
                 best_tput = tput
+                item_id = record.get("step_id", record.get("_line_nr"))
+                turns.append((total_time / 3600, best_tput, item_id))
 
         if best_tput is not None:
             xs.append(total_time / 3600)
             ys.append(best_tput)
 
-    return xs, ys
+    return xs, ys, turns
+
+
+def annotate_turns(ax, turns, color):
+    for x, y, item_id in turns:
+        ax.annotate(
+            str(item_id),
+            xy=(x, y),
+            xytext=(4, 4),
+            textcoords="offset points",
+            fontsize=7,
+            color=color,
+        )
 
 
 def plot_results(all_records, output_file):
@@ -85,10 +102,11 @@ def plot_results(all_records, output_file):
 
     for ax, target in zip(axes, RECALL_TARGETS):
         for label, records in all_records:
-            xs, ys = build_curve(records, target)
+            xs, ys, turns = build_curve(records, target)
             if not xs:
                 continue
-            ax.plot(xs, ys, marker="o", markersize=2.5, linewidth=1.4, label=label)
+            line = ax.plot(xs, ys, marker="o", markersize=2.5, linewidth=1.4, label=label)[0]
+            annotate_turns(ax, turns, line.get_color())
 
         ax.set_ylabel("Throughput")
         ax.set_title(f"Recall >= {target:g}")
