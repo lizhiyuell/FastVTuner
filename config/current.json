@@ -1,21 +1,21 @@
 {
   "name": "tuning-config",
   "engine": "milvus",
-  "index": "FLAT",
+  "index": "SCANN",
   "connection_params": {},
   "collection_params": {},
   "search_params": {
     "parallel": 20,
     "config": {
-      "nprobe": 80,
+      "nprobe": 5507,
       "ef": 500,
-      "reorder_k": 500
+      "reorder_k": 499
     }
   },
   "upload_params": {
     "parallel": 20,
     "index_params": {
-      "nlist": 640,
+      "nlist": 5507,
       "m": 120,
       "nbits": 8,
       "M": 32,
