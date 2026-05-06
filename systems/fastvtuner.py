@@ -42,6 +42,7 @@ from scipy.stats import qmc
 
 REF_POINT = torch.tensor([0.5, 0.5], dtype=torch.float64)
 NR_SEARCH_PER_BUILD = 5
+SEARCH_ONLY_SAMPLE_NUM = 256
 MIN_SAMPLED_RECALL_FOR_FULL_TEST = 0.7
 MAX_SAMPLED_RECALL_FOR_FULL_TEST = 1.0
 SAMPLED_RECALL_BLEND_INITIAL_WEIGHT = 0.7
@@ -257,6 +258,7 @@ class FastVTunerSystem(SystemBase):
         self.current_sampled_record = None
         self.current_skip_full_test = False
         self.skip_build = False
+        self.search_only_candidates = []
 
         if sampled_dataset_name is not None:
             self.init_sampled_vdb_engine(sampled_dataset_name)
@@ -335,8 +337,11 @@ class FastVTunerSystem(SystemBase):
                 self.update_model()
 
                 if self._has_search_params(polling_k):
+                    self.search_only_candidates = []
                     for _ in range(NR_SEARCH_PER_BUILD):
                         _, new_x = self.rr_polling(search_only=True)
+                        if new_x is None:
+                            break
                         self.vdb_config.set_normalized_param(new_x[0])
                         self.current_sampled_record = None
                         self.skip_build = True
@@ -448,26 +453,117 @@ class FastVTunerSystem(SystemBase):
             )
         return constraints
 
+    def _valid_normalized_param(self, params):
+        for indices, weights, rhs in self.vdb_config.get_inequality_constraints({}):
+            total = 0.0
+            for idx, weight in zip(indices, weights):
+                total += float(params[idx]) * float(weight)
+            if total < float(rhs) - 1e-9:
+                return False
+        return True
+
+    def _search_param_key(self, params, allowed_idxs):
+        key = []
+        for idx in allowed_idxs:
+            name = self.vdb_config.param_names[idx]
+            key.append(self.vdb_config.get_original(name, params[idx]))
+        return tuple(key)
+
+    def _predict_search_candidates(self, candidates):
+        X = torch.tensor(candidates, dtype=torch.float64)
+        with torch.no_grad():
+            recall = self.vbo.model.models[1].posterior(X).mean.squeeze(-1).numpy()
+            tput = self.vbo.model.models[0].posterior(X).mean.squeeze(-1).numpy()
+        return recall, tput
+
+    def _make_search_only_candidates(self, polling_k, allowed_idxs):
+        current = np.array(self.vdb_config.get_normalized_param(), dtype=float)
+        search_dim = len(allowed_idxs)
+        if search_dim == 0:
+            return [current]
+
+        sampler = qmc.Sobol(
+            d=search_dim,
+            scramble=True,
+            seed=self.seed + self._step_id,
+        )
+        sampled = sampler.random(SEARCH_ONLY_SAMPLE_NUM)
+
+        candidates = []
+        seen_keys = set()
+        for x in self.X[polling_k]:
+            seen_keys.add(self._search_param_key(x, allowed_idxs))
+
+        for sample in sampled:
+            candidate = current.copy()
+            for idx, value in zip(allowed_idxs, sample):
+                candidate[idx] = value
+
+            if not self._valid_normalized_param(candidate):
+                continue
+
+            key = self._search_param_key(candidate, allowed_idxs)
+            if key in seen_keys:
+                continue
+
+            seen_keys.add(key)
+            candidates.append(candidate)
+
+        if len(candidates) <= NR_SEARCH_PER_BUILD:
+            return candidates
+
+        recall, tput = self._predict_search_candidates(candidates)
+        finite_idxs = np.where(np.isfinite(recall))[0]
+        if len(finite_idxs) <= NR_SEARCH_PER_BUILD:
+            return [candidates[idx] for idx in finite_idxs]
+
+        recall_min = float(np.min(recall[finite_idxs]))
+        recall_max = float(np.max(recall[finite_idxs]))
+        print(f"step_id {self._step_id}, min_recall={recall_min}, max_recall={recall_max}")
+        if recall_max <= recall_min:
+            chosen_idxs = finite_idxs[np.argsort(-tput[finite_idxs])[:NR_SEARCH_PER_BUILD]]
+            return [candidates[idx] for idx in chosen_idxs]
+
+        target_recalls = np.linspace(recall_min, recall_max, NR_SEARCH_PER_BUILD + 2)[1:-1]
+        chosen_idxs = []
+        remaining = set(finite_idxs.tolist())
+        for target in target_recalls:
+            if not remaining:
+                break
+            best_idx = min(
+                remaining,
+                key=lambda idx: (abs(float(recall[idx]) - target), -float(tput[idx])),
+            )
+            chosen_idxs.append(best_idx)
+            remaining.remove(best_idx)
+
+        return [candidates[idx] for idx in chosen_idxs]
+
+    def _rr_polling_search_only(self):
+        index_type_idx = self.vdb_config.get_param_index("index_type")
+        polling_k = self.vdb_config.get_original_param()[index_type_idx]
+        allowed_idxs = [
+            idx for idx in self.polling_index[polling_k]
+            if self.vdb_config.param_meta[idx]["class"] == "searching"
+        ]
+
+        if not self.search_only_candidates:
+            self.search_only_candidates = self._make_search_only_candidates(polling_k, allowed_idxs)
+
+        if self.search_only_candidates:
+            return polling_k, np.array([self.search_only_candidates.pop(0)])
+
+        return polling_k, None
+
     def rr_polling(self, search_only=False):
         if search_only:
-            index_type_idx = self.vdb_config.get_param_index("index_type")
-            polling_k = self.vdb_config.get_original_param()[index_type_idx]
-            allowed_idxs = [
-                idx for idx in self.polling_index[polling_k]
-                if self.vdb_config.param_meta[idx]["class"] == "searching"
-            ]
-            fixed_idxs = [
-                i for i in range(self.knob_num)
-                if i not in allowed_idxs
-            ]
-            current = self.vdb_config.get_normalized_param()
-            fixed_features = {idx: current[idx] for idx in fixed_idxs}
-        else:
-            polling_idx = self.polling_round_num % len(self.remain_types)
-            polling_k = self.remain_types[polling_idx]
-            fixed_idxs = [i for i in range(self.knob_num) if i not in self.polling_sys+self.polling_index[polling_k]]
-            fixed_features = dict(zip(fixed_idxs, np.array(self.default_conf)[fixed_idxs]))
-            fixed_features[0] = self.vdb_config.get_normalized('index_type', polling_k)
+            return self._rr_polling_search_only()
+
+        polling_idx = self.polling_round_num % len(self.remain_types)
+        polling_k = self.remain_types[polling_idx]
+        fixed_idxs = [i for i in range(self.knob_num) if i not in self.polling_sys+self.polling_index[polling_k]]
+        fixed_features = dict(zip(fixed_idxs, np.array(self.default_conf)[fixed_idxs]))
+        fixed_features[0] = self.vdb_config.get_normalized('index_type', polling_k)
         inequality_constraints = self._build_inequality_constraints(fixed_features)
         new_x, ei, new_mean, new_std = self.vbo.recommend(
             fixed_features,
@@ -476,8 +572,7 @@ class FastVTunerSystem(SystemBase):
             sampled_recall_weight=self.get_sampled_recall_blend_weight(),
         )
 
-        if not search_only:
-            self.polling_round_num += 1
+        self.polling_round_num += 1
 
         return polling_k, new_x
     
