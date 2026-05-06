@@ -37,12 +37,12 @@ from gpytorch.kernels.matern_kernel import MaternKernel
 from gpytorch.kernels import ProductKernel
 from gpytorch.kernels.rbf_kernel import RBFKernel
 from gpytorch.priors.torch_priors import GammaPrior
-from scipy.stats import qmc
 
 
 REF_POINT = torch.tensor([0.5, 0.5], dtype=torch.float64)
 NR_SEARCH_PER_BUILD = 5
-SEARCH_ONLY_SAMPLE_NUM = 256
+SEARCH_RECALL_STOP_DELTA = 0.01
+MAX_SEARCH_ONLY_STEPS = 32
 MIN_SAMPLED_RECALL_FOR_FULL_TEST = 0.7
 MAX_SAMPLED_RECALL_FOR_FULL_TEST = 1.0
 SAMPLED_RECALL_BLEND_INITIAL_WEIGHT = 0.7
@@ -258,7 +258,7 @@ class FastVTunerSystem(SystemBase):
         self.current_sampled_record = None
         self.current_skip_full_test = False
         self.skip_build = False
-        self.search_only_candidates = []
+        self.search_param_directions = {}
 
         if sampled_dataset_name is not None:
             self.init_sampled_vdb_engine(sampled_dataset_name)
@@ -297,14 +297,9 @@ class FastVTunerSystem(SystemBase):
             self.vdb_engine.start()
             res_record = self.single_tune()
             self.single_test()
+            self._append_tuning_result(k, res_record)
+            self._probe_initial_search_params(k)
             self.vdb_engine.stop()
-
-            self.X[k].append(self.vdb_config.get_normalized_param())
-            self.Y[k].append([
-                res_record.query_throughput,
-                res_record.recall,
-                res_record.query_latency
-            ])
 
         self.current_skip_full_test = False
         self.update_model()
@@ -337,17 +332,7 @@ class FastVTunerSystem(SystemBase):
                 self.update_model()
 
                 if self._has_search_params(polling_k):
-                    self.search_only_candidates = []
-                    for _ in range(NR_SEARCH_PER_BUILD):
-                        _, new_x = self.rr_polling(search_only=True)
-                        if new_x is None:
-                            break
-                        self.vdb_config.set_normalized_param(new_x[0])
-                        self.current_sampled_record = None
-                        self.skip_build = True
-                        search_record = self.single_tune()
-                        self._append_tuning_result(polling_k, search_record)
-                        self.update_model()
+                    self._run_monotonic_search_only(polling_k)
             finally:
                 self.skip_build = False
                 self.vdb_engine.stop()
@@ -379,6 +364,179 @@ class FastVTunerSystem(SystemBase):
             self.vdb_config.param_meta[idx]["class"] == "searching"
             for idx in self.polling_index[index_type]
         )
+
+    def _get_search_param_idxs(self, index_type):
+        return [
+            idx for idx in self.polling_index[index_type]
+            if self.vdb_config.param_meta[idx]["class"] == "searching"
+        ]
+
+    def _get_effective_search_range(self, idx):
+        meta = self.vdb_config.param_meta[idx]
+        if meta["type"] == "enum":
+            return list(meta["enum_values"])
+
+        param_min = meta["min"]
+        param_max = meta["max"]
+        constrain = meta.get("constrain")
+        if constrain is not None:
+            op, other_name = self.vdb_config._parse_constrain(meta["name"], constrain)
+            other_idx = self.vdb_config.get_param_index(other_name)
+            other_value = self.vdb_config.get_original_param()[other_idx]
+            if op == "<=":
+                param_max = min(param_max, other_value)
+            elif op == ">=":
+                param_min = max(param_min, other_value)
+
+        return param_min, param_max
+
+    def _make_search_probe_values(self, idx):
+        meta = self.vdb_config.param_meta[idx]
+        value_range = self._get_effective_search_range(idx)
+
+        if meta["type"] == "enum":
+            values = value_range
+            if len(values) <= NR_SEARCH_PER_BUILD:
+                return values
+            chosen = np.linspace(0, len(values) - 1, NR_SEARCH_PER_BUILD)
+            return [values[int(round(pos))] for pos in chosen]
+
+        param_min, param_max = value_range
+        if param_max < param_min:
+            return []
+
+        if param_min > 0:
+            raw_values = np.geomspace(float(param_min), float(param_max), NR_SEARCH_PER_BUILD)
+        else:
+            raw_values = np.linspace(float(param_min), float(param_max), NR_SEARCH_PER_BUILD)
+
+        if meta["type"] == "integer":
+            values = [int(round(value)) for value in raw_values]
+            values[0] = int(param_min)
+            values[-1] = int(param_max)
+            return sorted(set(values))
+
+        values = [float(value) for value in raw_values]
+        values[0] = float(param_min)
+        values[-1] = float(param_max)
+        return values
+
+    def _infer_search_direction(self, records):
+        records = [record for record in records if record[1] is not None]
+        if len(records) < 2:
+            return "increasing"
+
+        records.sort(key=lambda record: record[0])
+        recall_delta = records[-1][1] - records[0][1]
+        if recall_delta < 0:
+            return "decreasing"
+        return "increasing"
+
+    def _run_search_only_tune(self, index_type):
+        self.current_sampled_record = None
+        self.skip_build = True
+        record = self.single_tune()
+        self._append_tuning_result(index_type, record)
+        return record
+
+    def _probe_initial_search_params(self, index_type):
+        search_idxs = self._get_search_param_idxs(index_type)
+        if not search_idxs:
+            return
+
+        self.search_param_directions[index_type] = {}
+        base_params = self.vdb_config.get_original_param()
+        old_skip_build = self.skip_build
+        try:
+            for idx in search_idxs:
+                param_name = self.vdb_config.param_names[idx]
+                records = []
+                for value in self._make_search_probe_values(idx):
+                    params = list(base_params)
+                    params[idx] = value
+                    self.vdb_config.set_original_param(params)
+                    record = self._run_search_only_tune(index_type)
+                    records.append((value, record.recall))
+
+                direction = self._infer_search_direction(records)
+                self.search_param_directions[index_type][param_name] = direction
+                print(
+                    f"[FastVTuner] initial probe: index_type={index_type}, "
+                    f"param={param_name}, direction={direction}",
+                    flush=True,
+                )
+        finally:
+            self.skip_build = old_skip_build
+            self.vdb_config.set_original_param(base_params)
+
+    def _next_search_value(self, idx, value, direction):
+        meta = self.vdb_config.param_meta[idx]
+        value_range = self._get_effective_search_range(idx)
+
+        if meta["type"] == "enum":
+            values = value_range
+            if value not in values:
+                return values[0] if direction == "increasing" else values[-1]
+            pos = values.index(value)
+            if direction == "increasing":
+                return values[min(pos + 1, len(values) - 1)]
+            return values[max(pos - 1, 0)]
+
+        param_min, param_max = value_range
+        if direction == "increasing":
+            if meta["type"] == "integer":
+                return min(int(param_max), max(int(value) + 1, int(value) * 2))
+            return min(float(param_max), float(value) * 2)
+
+        if meta["type"] == "integer":
+            return max(int(param_min), int(value) // 2)
+        return max(float(param_min), float(value) / 2)
+
+    def _run_monotonic_search_only(self, index_type):
+        search_idxs = self._get_search_param_idxs(index_type)
+        if not search_idxs:
+            return
+
+        base_params = self.vdb_config.get_original_param()
+        current_values = {}
+        directions = {}
+        for idx in search_idxs:
+            param_name = self.vdb_config.param_names[idx]
+            direction = self.search_param_directions.get(index_type).get(param_name)
+            directions[idx] = direction
+            value_range = self._get_effective_search_range(idx)
+            if self.vdb_config.param_meta[idx]["type"] == "enum":
+                current_values[idx] = value_range[0] if direction == "increasing" else value_range[-1]
+            else:
+                param_min, param_max = value_range
+                current_values[idx] = param_min if direction == "increasing" else param_max
+
+        prev_recall = None
+        old_skip_build = self.skip_build
+        try:
+            for _ in range(MAX_SEARCH_ONLY_STEPS):
+                params = list(base_params)
+                for idx, value in current_values.items():
+                    params[idx] = value
+
+                self.vdb_config.set_original_param(params)
+
+                record = self._run_search_only_tune(index_type)
+                self.update_model()
+                if prev_recall is not None and abs(record.recall - prev_recall) < SEARCH_RECALL_STOP_DELTA:
+                    break
+
+                prev_recall = record.recall
+                next_values = {}
+                for idx, value in current_values.items():
+                    next_values[idx] = self._next_search_value(idx, value, directions[idx])
+
+                if next_values == current_values:
+                    break
+                current_values = next_values
+        finally:
+            self.skip_build = old_skip_build
+            self.vdb_config.set_original_param(base_params)
 
     def reward_transform(self,):
         # to calculate within each index type set
@@ -453,111 +611,9 @@ class FastVTunerSystem(SystemBase):
             )
         return constraints
 
-    def _valid_normalized_param(self, params):
-        for indices, weights, rhs in self.vdb_config.get_inequality_constraints({}):
-            total = 0.0
-            for idx, weight in zip(indices, weights):
-                total += float(params[idx]) * float(weight)
-            if total < float(rhs) - 1e-9:
-                return False
-        return True
-
-    def _search_param_key(self, params, allowed_idxs):
-        key = []
-        for idx in allowed_idxs:
-            name = self.vdb_config.param_names[idx]
-            key.append(self.vdb_config.get_original(name, params[idx]))
-        return tuple(key)
-
-    def _predict_search_candidates(self, candidates):
-        X = torch.tensor(candidates, dtype=torch.float64)
-        with torch.no_grad():
-            recall = self.vbo.model.models[1].posterior(X).mean.squeeze(-1).numpy()
-            tput = self.vbo.model.models[0].posterior(X).mean.squeeze(-1).numpy()
-        return recall, tput
-
-    def _make_search_only_candidates(self, polling_k, allowed_idxs):
-        current = np.array(self.vdb_config.get_normalized_param(), dtype=float)
-        search_dim = len(allowed_idxs)
-        if search_dim == 0:
-            return [current]
-
-        sampler = qmc.Sobol(
-            d=search_dim,
-            scramble=True,
-            seed=self.seed + self._step_id,
-        )
-        sampled = sampler.random(SEARCH_ONLY_SAMPLE_NUM)
-
-        candidates = []
-        seen_keys = set()
-        for x in self.X[polling_k]:
-            seen_keys.add(self._search_param_key(x, allowed_idxs))
-
-        for sample in sampled:
-            candidate = current.copy()
-            for idx, value in zip(allowed_idxs, sample):
-                candidate[idx] = value
-
-            if not self._valid_normalized_param(candidate):
-                continue
-
-            key = self._search_param_key(candidate, allowed_idxs)
-            if key in seen_keys:
-                continue
-
-            seen_keys.add(key)
-            candidates.append(candidate)
-
-        if len(candidates) <= NR_SEARCH_PER_BUILD:
-            return candidates
-
-        recall, tput = self._predict_search_candidates(candidates)
-        finite_idxs = np.where(np.isfinite(recall))[0]
-        if len(finite_idxs) <= NR_SEARCH_PER_BUILD:
-            return [candidates[idx] for idx in finite_idxs]
-
-        recall_min = float(np.min(recall[finite_idxs]))
-        recall_max = float(np.max(recall[finite_idxs]))
-        print(f"step_id {self._step_id}, min_recall={recall_min}, max_recall={recall_max}")
-        if recall_max <= recall_min:
-            chosen_idxs = finite_idxs[np.argsort(-tput[finite_idxs])[:NR_SEARCH_PER_BUILD]]
-            return [candidates[idx] for idx in chosen_idxs]
-
-        target_recalls = np.linspace(recall_min, recall_max, NR_SEARCH_PER_BUILD + 2)[1:-1]
-        chosen_idxs = []
-        remaining = set(finite_idxs.tolist())
-        for target in target_recalls:
-            if not remaining:
-                break
-            best_idx = min(
-                remaining,
-                key=lambda idx: (abs(float(recall[idx]) - target), -float(tput[idx])),
-            )
-            chosen_idxs.append(best_idx)
-            remaining.remove(best_idx)
-
-        return [candidates[idx] for idx in chosen_idxs]
-
-    def _rr_polling_search_only(self):
-        index_type_idx = self.vdb_config.get_param_index("index_type")
-        polling_k = self.vdb_config.get_original_param()[index_type_idx]
-        allowed_idxs = [
-            idx for idx in self.polling_index[polling_k]
-            if self.vdb_config.param_meta[idx]["class"] == "searching"
-        ]
-
-        if not self.search_only_candidates:
-            self.search_only_candidates = self._make_search_only_candidates(polling_k, allowed_idxs)
-
-        if self.search_only_candidates:
-            return polling_k, np.array([self.search_only_candidates.pop(0)])
-
-        return polling_k, None
-
     def rr_polling(self, search_only=False):
         if search_only:
-            return self._rr_polling_search_only()
+            raise NotImplementedError("search_only polling uses monotonic real probing")
 
         polling_idx = self.polling_round_num % len(self.remain_types)
         polling_k = self.remain_types[polling_idx]
@@ -823,8 +879,8 @@ def main():
         # sampled_dataset_name="gist-p-1",
     )
     
-    for i in range(200):
-    # for i in range(65):
+    # for i in range(200):
+    for i in range(65):
         system.step()
 
 
