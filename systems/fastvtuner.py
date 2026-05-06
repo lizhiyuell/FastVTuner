@@ -40,7 +40,7 @@ from gpytorch.priors.torch_priors import GammaPrior
 from scipy.stats import qmc
 
 
-REF_POINT = torch.tensor([0.5,0.5])
+REF_POINT = torch.tensor([0.5, 0.5], dtype=torch.float64)
 NR_SEARCH_PER_BUILD = 5
 MIN_SAMPLED_RECALL_FOR_FULL_TEST = 0.7
 MAX_SAMPLED_RECALL_FOR_FULL_TEST = 1.0
@@ -135,7 +135,10 @@ def fast_non_dominated_sort(P):
 class EHVIBO:
     def __init__(self, knob_num, seed) -> None:
         self.knob_num = knob_num
-        self.bounds = torch.tensor([[0.0] * self.knob_num, [1.0] * self.knob_num])
+        self.bounds = torch.tensor(
+            [[0.0] * self.knob_num, [1.0] * self.knob_num],
+            dtype=torch.float64,
+        )
         self.seed = seed
         self.X_init = None
         self.Y_init = None
@@ -719,12 +722,14 @@ class FastVTunerSystem(SystemBase):
 def main():
     system = FastVTunerSystem(
         vdb_name="milvus",
-        # dataset_name="gist-p-1",
         dataset_name="gist",
         sampled_dataset_name="gist-p-10",
+        # dataset_name="gist-p-1",
+        # sampled_dataset_name="gist-p-1",
     )
     
-    for i in range(65):
+    for i in range(200):
+    # for i in range(65):
         system.step()
 
 

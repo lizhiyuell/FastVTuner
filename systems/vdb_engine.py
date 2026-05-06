@@ -121,9 +121,9 @@ class VDBEngine:
         # 4. wait for connection built
         while True:
             try:
-                with request.urlopen("http://localhost:9091/healthz", timeout=10):
+                with request.urlopen("http://127.0.0.1:9091/healthz", timeout=10):
                     break
-            except (error.URLError, error.HTTPError):
+            except (error.URLError, error.HTTPError, OSError):
                 time.sleep(1)
 
         # print("[VDB] VDB started")
