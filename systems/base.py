@@ -72,16 +72,24 @@ class SystemBase(ABC):
         self._history: list[TuningRecord] = []
         self._step_id = 0
         self._rng = Random(self.seed)
-        workload_name = Path(getattr(sys.modules.get("__main__"), "__file__", "interactive")).stem
+        main_file = getattr(sys.modules.get("__main__"), "__file__", "interactive")
+        workload_name = Path(main_file).stem
+        method_name = self.__class__.__name__
+        if method_name.endswith("System"):
+            method_name = method_name[:-6]
+        method_name = method_name.lower()
+
         log_dir = RESULT_ROOT / workload_name / self.vdb_name
         log_dir.mkdir(parents=True, exist_ok=True)
+        log_path = log_dir / f"{self.dataset_name}_{method_name}.txt"
         self._log_paths = {
-            "tune": log_dir / f"{self.dataset_name}_tune.txt",
-            "test": log_dir / f"{self.dataset_name}_test.txt",
+            "tune": log_path,
+            "test": log_path,
         }
+        log_file = log_path.open("w", encoding="utf-8")
         self._log_files = {
-            phase: path.open("w", encoding="utf-8")
-            for phase, path in self._log_paths.items()
+            "tune": log_file,
+            "test": log_file,
         }
 
         self.set_top_k(top_k)

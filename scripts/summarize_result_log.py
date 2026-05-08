@@ -163,7 +163,7 @@ def plot_results(results, output_file):
 
 def main():
     parser = argparse.ArgumentParser(description="Summarize result records and plot throughput ratio.")
-    parser.add_argument("result_file", help="Result file, e.g. results/fastvtuner/milvus/gist_tune.txt")
+    parser.add_argument("result_file", help="Result file, e.g. results/fastvtuner/milvus/gist_fastvtuner.txt")
     args = parser.parse_args()
 
     result_file = Path(args.result_file)

@@ -10,8 +10,8 @@ from matplotlib.ticker import MultipleLocator, StrMethodFormatter
 
 
 RESULT_FILES = [
-    ("fastvtuner", Path("../results/fastvtuner/milvus/gist_tune.txt")),
-    ("vdtuner", Path("../results/vdtuner/milvus/gist_tune.txt")),
+    ("fastvtuner", Path("../results/fastvtuner/milvus/gist_fastvtuner.txt")),
+    ("vdtuner", Path("../results/vdtuner/milvus/gist_vdtuner.txt")),
 ]
 
 RECALL_TARGETS = [0.75, 0.8, 0.85, 0.9, 0.95, 0.99]
