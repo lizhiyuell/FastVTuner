@@ -81,15 +81,13 @@ class SystemBase(ABC):
 
         log_dir = RESULT_ROOT / workload_name / self.vdb_name
         log_dir.mkdir(parents=True, exist_ok=True)
-        log_path = log_dir / f"{self.dataset_name}_{method_name}.txt"
         self._log_paths = {
-            "tune": log_path,
-            "test": log_path,
+            "tune": log_dir / f"{self.dataset_name}_{method_name}_tune.txt",
+            "test": log_dir / f"{self.dataset_name}_{method_name}_test.txt",
         }
-        log_file = log_path.open("w", encoding="utf-8")
         self._log_files = {
-            "tune": log_file,
-            "test": log_file,
+            phase: path.open("w", encoding="utf-8")
+            for phase, path in self._log_paths.items()
         }
 
         self.set_top_k(top_k)

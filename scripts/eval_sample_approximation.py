@@ -150,7 +150,7 @@ def plot_results(results, output_file):
 
 def main():
     parser = argparse.ArgumentParser(description="Plot full/sample approximation results.")
-    parser.add_argument("result_file", help="Path to a result txt file, e.g. results/fastvtuner/milvus/gist_fastvtuner.txt")
+    parser.add_argument("result_file", help="Path to a result txt file, e.g. results/fastvtuner/milvus/gist_fastvtuner_tune.txt")
     args = parser.parse_args()
 
     result_file = Path(args.result_file).resolve()

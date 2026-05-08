@@ -162,7 +162,7 @@ def plot_results(points, output_file):
 
 def main():
     parser = argparse.ArgumentParser(description="Analyze full/sample throughput and recall gaps.")
-    parser.add_argument("result_file", help="Result file, e.g. results/fastvtuner/milvus/gist_fastvtuner.txt")
+    parser.add_argument("result_file", help="Result file, e.g. results/fastvtuner/milvus/gist_fastvtuner_tune.txt")
     args = parser.parse_args()
 
     result_file = Path(args.result_file)
