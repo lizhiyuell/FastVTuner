@@ -27,7 +27,7 @@ common:
   defaultPartitionName: _default
   entityExpiration: -1
   gracefulStopTimeout: 1800
-  gracefulTime: 100000
+  gracefulTime: 15232
   indexSliceSize: 16
   locks:
     metrics:
@@ -90,7 +90,7 @@ dataCoord:
     maxBinlogFileNumber: 32
     maxIdleTime: 600
     maxLife: 86400
-    maxSize: 10000
+    maxSize: 100
     minSizeFromIdleToSealed: 16
     sealProportion: 0.01
     smallProportion: 0.50
@@ -251,7 +251,7 @@ pulsar:
   tenant: public
   webport: 80
 queryCoord:
-  autoBalance: false
+  autoBalance: true
   autoHandoff: true
   balanceIntervalSeconds: 60
   balancer: ScoreBasedBalancer
