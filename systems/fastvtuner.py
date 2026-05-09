@@ -43,6 +43,7 @@ REF_POINT = torch.tensor([0.5, 0.5], dtype=torch.float64)
 NR_SEARCH_PER_BUILD = 5
 SEARCH_RECALL_SPAN = 0.05
 MAX_SEARCH_ONLY_STEPS = 32
+SAMPLING = False
 MIN_SAMPLED_RECALL_FOR_FULL_TEST = 0.7
 MAX_SAMPLED_RECALL_FOR_FULL_TEST = 1.0
 SAMPLED_RECALL_BLEND_INITIAL_WEIGHT = 0.7
@@ -264,7 +265,7 @@ class FastVTunerSystem(SystemBase):
         self.sampled_recall_blend_min_weight = sampled_recall_blend_min_weight
         self.search_recall_span = search_recall_span
 
-        if sampled_dataset_name is not None:
+        if SAMPLING and sampled_dataset_name is not None:
             self.init_sampled_vdb_engine(sampled_dataset_name)
         torch.manual_seed(seed)
         random.seed(seed)
@@ -320,9 +321,13 @@ class FastVTunerSystem(SystemBase):
 
         # the new_x is an array of parameter array, we detach it
         self.vdb_config.set_normalized_param(new_x[0])
-        self._run_sampled_test()
-        self._append_sampled_recall_result(polling_k)
-        self.current_skip_full_test = self._should_skip_full_test()
+        if SAMPLING:
+            self._run_sampled_test()
+            self._append_sampled_recall_result(polling_k)
+            self.current_skip_full_test = self._should_skip_full_test()
+        else:
+            self.current_sampled_record = None
+            self.current_skip_full_test = False
         if self.current_skip_full_test:
             self.single_tune()
             self.single_test()
@@ -440,6 +445,7 @@ class FastVTunerSystem(SystemBase):
         self.current_sampled_record = None
         self.skip_build = True
         record = self.single_tune()
+        self.single_test()
         self._append_tuning_result(index_type, record)
         return record
 
@@ -702,8 +708,11 @@ class FastVTunerSystem(SystemBase):
 
     def update_model(self,):
         self.reward_transform()
-        sampled_X, sampled_Y = self.get_normalized_sampled_recall_records()
-        self.vbo.update_samples(self.norm_X, self.norm_Y, sampled_X, sampled_Y)
+        if SAMPLING:
+            sampled_X, sampled_Y = self.get_normalized_sampled_recall_records()
+            self.vbo.update_samples(self.norm_X, self.norm_Y, sampled_X, sampled_Y)
+        else:
+            self.vbo.update_samples(self.norm_X, self.norm_Y)
 
     def _build_inequality_constraints(self, fixed_features):
         constraints = []
@@ -731,7 +740,7 @@ class FastVTunerSystem(SystemBase):
             fixed_features,
             1,
             inequality_constraints=inequality_constraints,
-            sampled_recall_weight=self.get_sampled_recall_blend_weight(),
+            sampled_recall_weight=self.get_sampled_recall_blend_weight() if SAMPLING else 0.0,
         )
 
         self.polling_round_num += 1
@@ -777,13 +786,16 @@ class FastVTunerSystem(SystemBase):
         self.worst_type_record.append(max(self.delta_hv, key=lambda k: self.delta_hv[k]))
 
     def _run_sampled_test(self):
-        if self.sampled_vdb_engine is None:
+        if not SAMPLING or self.sampled_vdb_engine is None:
             self.current_sampled_record = None
             return
 
         self.current_sampled_record = self._test_on_sampled_dataset()
 
     def _should_skip_full_test(self):
+        if not SAMPLING:
+            return False
+
         if self.current_sampled_record is None:
             return False
 
@@ -910,7 +922,7 @@ class FastVTunerSystem(SystemBase):
             ),
             index_time=build_time,
             query_time=query_time,
-            recall=recall if self.current_sampled_record is None else self.current_sampled_record["recall"],
+            recall=recall,
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
@@ -939,7 +951,7 @@ class FastVTunerSystem(SystemBase):
                 query_throughput=0.0,
                 query_latency=0.0,
                 skip=True,
-                extra=self._build_extra_record(),
+                extra=self._build_extra_record(search_only=self.skip_build),
             )
 
         print(f"[FastVTuner] round {self._step_id}: start test", flush=True)
@@ -969,11 +981,11 @@ class FastVTunerSystem(SystemBase):
             ),
             index_time=0.0,
             query_time=query_time,
-            recall=recall if self.current_sampled_record is None else self.current_sampled_record["recall"],
+            recall=recall,
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
-            extra=self._build_extra_record(),
+            extra=self._build_extra_record(search_only=self.skip_build),
         )
 
 def main():
