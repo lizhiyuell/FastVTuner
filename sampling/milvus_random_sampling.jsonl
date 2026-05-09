@@ -1,0 +1,497 @@
+{"build_sample_id": 0, "parameter": {"build": {}, "index": "FLAT", "search": {}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 259}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 1045}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 483}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 2030}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 1842}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 1935}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 1555}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 860}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 385}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 1999}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 117}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 1597}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 1773}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 9}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 1825}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 1, "parameter": {"build": {"nlist": 2202}, "index": "IVF_FLAT", "search": {"nprobe": 1091}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 2422}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 419}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 3693}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 1301}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 126}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 92}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 105}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 2661}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 2218}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 38}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 3610}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 1562}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 2812}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 888}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 1729}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 2, "parameter": {"build": {"nlist": 3749}, "index": "IVF_SQ8", "search": {"nprobe": 2974}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 392}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 225}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 254}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 284}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 120}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 177}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 119}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 347}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 113}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 390}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 236}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 149}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 475}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 12}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 214}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 3, "parameter": {"build": {"m": 48, "nbits": 4, "nlist": 476}, "index": "IVF_PQ", "search": {"nprobe": 429}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 1648}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 3055}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 4866}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 1990}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 5460}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 8215}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 6925}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 8328}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 3120}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 4980}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 4665}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 9636}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 8191}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 8288}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 6454}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 4, "parameter": {"build": {"M": 62, "efConstruction": 292}, "index": "HNSW", "search": {"ef": 9660}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 492, "reorder_k": 348}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 414, "reorder_k": 524}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 178, "reorder_k": 475}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 562, "reorder_k": 819}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 384, "reorder_k": 188}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 450, "reorder_k": 779}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 521, "reorder_k": 210}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 168, "reorder_k": 633}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 403, "reorder_k": 479}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 502, "reorder_k": 850}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 31, "reorder_k": 580}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 45, "reorder_k": 415}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 404, "reorder_k": 762}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 175, "reorder_k": 272}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 515, "reorder_k": 332}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 5, "parameter": {"build": {"nlist": 566}, "index": "SCANN", "search": {"nprobe": 13, "reorder_k": 889}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 3804}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 6627}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 8418}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 5634}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 5789}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 7523}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 4412}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 94}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 6287}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 8397}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 2118}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 8499}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 3367}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 6982}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 920}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 6, "parameter": {"build": {"nlist": 8842}, "index": "IVF_FLAT", "search": {"nprobe": 7883}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 9084}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 3275}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 8270}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 6774}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 7946}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 5846}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 6790}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 5671}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 26}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 8823}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 8850}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 5426}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 7507}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 459}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 3762}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 7, "parameter": {"build": {"nlist": 9339}, "index": "IVF_SQ8", "search": {"nprobe": 2904}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 1510}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 9038}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 4192}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 541}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 1164}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 1373}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 283}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 7431}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 248}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 4617}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 4098}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 4411}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 1803}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 3034}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 5653}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 8, "parameter": {"build": {"M": 41, "efConstruction": 100}, "index": "HNSW", "search": {"ef": 4766}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 1046}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 2161}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 689}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 1118}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 1207}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 1863}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 1319}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 2034}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 1941}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 468}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 97}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 1278}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 1584}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 1407}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 1725}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 9, "parameter": {"build": {"nlist": 2616}, "index": "IVF_FLAT", "search": {"nprobe": 771}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 520}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 1496}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 1045}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 429}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 1241}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 885}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 1674}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 43}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 462}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 37}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 814}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 300}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 73}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 1473}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 329}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 10, "parameter": {"build": {"nlist": 1782}, "index": "IVF_SQ8", "search": {"nprobe": 913}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 6991, "reorder_k": 657}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 3615, "reorder_k": 745}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 7387, "reorder_k": 328}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 503, "reorder_k": 504}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 5264, "reorder_k": 775}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 6985, "reorder_k": 160}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 4893, "reorder_k": 228}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 3476, "reorder_k": 996}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 778, "reorder_k": 413}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 1159, "reorder_k": 979}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 1253, "reorder_k": 417}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 4881, "reorder_k": 861}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 2593, "reorder_k": 526}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 4135, "reorder_k": 233}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 139, "reorder_k": 674}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 11, "parameter": {"build": {"nlist": 8296}, "index": "SCANN", "search": {"nprobe": 622, "reorder_k": 704}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 7551}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 2811}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 8338}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 614}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 6193}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 3284}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 5685}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 1623}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 3372}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 7094}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 3181}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 8067}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 1711}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 6391}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 4851}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 12, "parameter": {"build": {"nlist": 9344}, "index": "IVF_FLAT", "search": {"nprobe": 8260}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 206}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 145}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 10}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 81}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 103}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 168}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 70}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 174}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 220}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 110}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 137}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 50}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 195}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 281}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 177}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 13, "parameter": {"build": {"m": 16, "nbits": 10, "nlist": 282}, "index": "IVF_PQ", "search": {"nprobe": 274}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 662}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 1388}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 2180}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 2781}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 2729}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 3490}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 4392}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 5444}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 8289}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 4183}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 6032}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 5552}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 5576}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 1867}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 4772}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 14, "parameter": {"build": {"m": 10, "nbits": 2, "nlist": 8725}, "index": "IVF_PQ", "search": {"nprobe": 3854}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 8018}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 2227}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 9512}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 9040}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 1718}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 5264}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 651}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 6671}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 1209}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 6239}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 2423}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 2058}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 5595}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 1889}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 9634}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 15, "parameter": {"build": {"M": 53, "efConstruction": 496}, "index": "HNSW", "search": {"ef": 6203}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 9282}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 1349}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 4380}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 5988}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 4852}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 9257}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 8763}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 1882}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 7510}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 4551}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 1775}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 759}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 4855}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 212}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 248}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 16, "parameter": {"build": {"M": 39, "efConstruction": 122}, "index": "HNSW", "search": {"ef": 1512}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 385}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 491}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 1609}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 1202}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 863}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 332}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 237}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 924}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 343}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 1395}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 495}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 326}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 1524}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 1731}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 211}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 17, "parameter": {"build": {"m": 480, "nbits": 1, "nlist": 1886}, "index": "IVF_PQ", "search": {"nprobe": 892}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 4152}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 7816}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 5153}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 1641}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 3402}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 5201}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 650}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 447}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 173}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 4843}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 5247}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 7371}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 6411}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 5133}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 6530}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 18, "parameter": {"build": {"m": 480, "nbits": 5, "nlist": 8896}, "index": "IVF_PQ", "search": {"nprobe": 1032}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 7469}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 1825}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 4098}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 3526}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 8896}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 7683}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 5830}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 4245}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 3002}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 8874}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 3406}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 5036}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 3264}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 4037}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 5906}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 19, "parameter": {"build": {"nlist": 9855}, "index": "IVF_SQ8", "search": {"nprobe": 1334}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 918}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 186}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 1336}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 1177}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 1318}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 695}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 466}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 800}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 629}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 85}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 671}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 383}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 649}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 1186}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 621}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 20, "parameter": {"build": {"nlist": 1465}, "index": "IVF_SQ8", "search": {"nprobe": 504}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 1115}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 1253}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 1186}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 1654}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 1221}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 189}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 502}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 451}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 42}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 500}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 823}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 149}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 549}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 1129}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 146}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 21, "parameter": {"build": {"nlist": 1654}, "index": "IVF_SQ8", "search": {"nprobe": 1494}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 75, "reorder_k": 868}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 92, "reorder_k": 605}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 121, "reorder_k": 983}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 40, "reorder_k": 203}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 129, "reorder_k": 896}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 84, "reorder_k": 178}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 131, "reorder_k": 781}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 45, "reorder_k": 283}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 39, "reorder_k": 244}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 82, "reorder_k": 412}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 28, "reorder_k": 826}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 132, "reorder_k": 954}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 155, "reorder_k": 400}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 33, "reorder_k": 311}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 37, "reorder_k": 658}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 22, "parameter": {"build": {"nlist": 163}, "index": "SCANN", "search": {"nprobe": 9, "reorder_k": 898}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 3366}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 2919}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 4898}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 7089}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 8807}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 2587}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 796}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 4052}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 4139}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 1056}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 7319}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 7048}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 9000}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 4100}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 8870}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 23, "parameter": {"build": {"nlist": 9060}, "index": "IVF_SQ8", "search": {"nprobe": 7200}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 6493}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 5558}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 2820}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 4236}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 7969}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 409}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 6836}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 9358}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 319}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 1031}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 5825}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 9513}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 2275}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 9734}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 2060}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 24, "parameter": {"build": {"M": 33, "efConstruction": 13}, "index": "HNSW", "search": {"ef": 2279}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 3259}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 3286}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 1411}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 732}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 1914}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 3982}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 62}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 1455}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 4332}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 2599}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 4104}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 3591}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 1850}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 1953}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 2564}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 25, "parameter": {"build": {"nlist": 4537}, "index": "IVF_SQ8", "search": {"nprobe": 4056}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 7836, "reorder_k": 330}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 5840, "reorder_k": 522}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 2761, "reorder_k": 673}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 5008, "reorder_k": 845}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 7518, "reorder_k": 769}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 2255, "reorder_k": 761}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 1798, "reorder_k": 149}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 7550, "reorder_k": 173}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 6253, "reorder_k": 623}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 5287, "reorder_k": 998}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 3021, "reorder_k": 263}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 4192, "reorder_k": 884}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 6492, "reorder_k": 308}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 2555, "reorder_k": 405}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 5674, "reorder_k": 406}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 26, "parameter": {"build": {"nlist": 7846}, "index": "SCANN", "search": {"nprobe": 6955, "reorder_k": 665}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 1904}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 2436}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 349}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 505}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 2483}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 2106}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 2340}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 1546}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 723}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 639}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 1027}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 1748}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 892}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 2333}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 214}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 27, "parameter": {"build": {"nlist": 2707}, "index": "IVF_SQ8", "search": {"nprobe": 2028}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 5875, "reorder_k": 752}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 2851, "reorder_k": 493}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 4220, "reorder_k": 965}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 1351, "reorder_k": 657}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 5980, "reorder_k": 141}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 4295, "reorder_k": 192}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 2091, "reorder_k": 743}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 828, "reorder_k": 373}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 6037, "reorder_k": 185}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 1140, "reorder_k": 894}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 5054, "reorder_k": 962}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 5405, "reorder_k": 803}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 5738, "reorder_k": 183}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 3646, "reorder_k": 971}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 1975, "reorder_k": 971}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 28, "parameter": {"build": {"nlist": 6449}, "index": "SCANN", "search": {"nprobe": 3133, "reorder_k": 921}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 3590}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 1035}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 5099}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 3998}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 1737}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 977}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 3533}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 4921}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 4375}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 3345}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 968}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 5411}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 2421}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 2275}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 2034}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 29, "parameter": {"build": {"m": 6, "nbits": 6, "nlist": 6509}, "index": "IVF_PQ", "search": {"nprobe": 3104}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 66, "reorder_k": 294}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 8657, "reorder_k": 549}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 345, "reorder_k": 131}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 3969, "reorder_k": 955}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 4267, "reorder_k": 311}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 2833, "reorder_k": 391}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 2432, "reorder_k": 655}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 3285, "reorder_k": 379}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 5098, "reorder_k": 699}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 4111, "reorder_k": 952}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 7314, "reorder_k": 910}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 2753, "reorder_k": 658}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 5849, "reorder_k": 602}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 6881, "reorder_k": 976}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 1996, "reorder_k": 887}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 30, "parameter": {"build": {"nlist": 9165}, "index": "SCANN", "search": {"nprobe": 3424, "reorder_k": 684}}, "search_sample_id": 15, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 3308}}, "search_sample_id": 0, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 99}}, "search_sample_id": 1, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 484}}, "search_sample_id": 2, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 2332}}, "search_sample_id": 3, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 3061}}, "search_sample_id": 4, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 55}}, "search_sample_id": 5, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 2234}}, "search_sample_id": 6, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 1215}}, "search_sample_id": 7, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 2761}}, "search_sample_id": 8, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 3118}}, "search_sample_id": 9, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 2967}}, "search_sample_id": 10, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 2660}}, "search_sample_id": 11, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 560}}, "search_sample_id": 12, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 308}}, "search_sample_id": 13, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 2050}}, "search_sample_id": 14, "vdb_type": "milvus"}
+{"build_sample_id": 31, "parameter": {"build": {"m": 15, "nbits": 2, "nlist": 3356}, "index": "IVF_PQ", "search": {"nprobe": 1531}}, "search_sample_id": 15, "vdb_type": "milvus"}

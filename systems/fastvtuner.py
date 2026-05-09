@@ -42,8 +42,9 @@ from gpytorch.priors.torch_priors import GammaPrior
 REF_POINT = torch.tensor([0.5, 0.5], dtype=torch.float64)
 NR_SEARCH_PER_BUILD = 5
 SEARCH_RECALL_SPAN = 0.05
+SEARCH_EXPANSION_RECALL_SPAN = 0.01
 MAX_SEARCH_ONLY_STEPS = 32
-SAMPLING = False
+SAMPLING = True
 MIN_SAMPLED_RECALL_FOR_FULL_TEST = 0.7
 MAX_SAMPLED_RECALL_FOR_FULL_TEST = 1.0
 SAMPLED_RECALL_BLEND_INITIAL_WEIGHT = 0.7
@@ -244,6 +245,7 @@ class FastVTunerSystem(SystemBase):
         seed=1206,
         sampled_recall_blend_min_weight=SAMPLED_RECALL_BLEND_MIN_WEIGHT,
         search_recall_span=SEARCH_RECALL_SPAN,
+        search_expansion_recall_span=SEARCH_EXPANSION_RECALL_SPAN,
     ):
         super().__init__(
             vdb_name=vdb_name,
@@ -264,6 +266,7 @@ class FastVTunerSystem(SystemBase):
         self.search_param_directions = {}
         self.sampled_recall_blend_min_weight = sampled_recall_blend_min_weight
         self.search_recall_span = search_recall_span
+        self.search_expansion_recall_span = search_expansion_recall_span
 
         if SAMPLING and sampled_dataset_name is not None:
             self.init_sampled_vdb_engine(sampled_dataset_name)
@@ -560,7 +563,28 @@ class FastVTunerSystem(SystemBase):
         self.update_model()
         return record
 
-    def _refine_search_recall_gaps(self, index_type, base_params, search_idxs, records, remaining_steps):
+    def _insert_search_record(self, records, values, recall):
+        for pos, (record_values, _) in enumerate(records):
+            if record_values == values:
+                records[pos] = (values, recall)
+                return
+
+        for pos, (record_values, _) in enumerate(records):
+            if values < record_values:
+                records.insert(pos, (values, recall))
+                return
+
+        records.append((values, recall))
+
+    def _refine_search_recall_gaps(
+        self,
+        index_type,
+        base_params,
+        search_idxs,
+        records,
+        remaining_steps,
+        min_recall=MIN_SAMPLED_RECALL_FOR_FULL_TEST,
+    ):
         used_steps = 0
         tested_values = {record[0] for record in records}
         while used_steps < remaining_steps:
@@ -568,6 +592,8 @@ class FastVTunerSystem(SystemBase):
             for pos in range(len(records) - 1):
                 left_values, left_recall = records[pos]
                 right_values, right_recall = records[pos + 1]
+                if max(left_recall, right_recall) < min_recall:
+                    continue
                 if abs(right_recall - left_recall) <= self.search_recall_span:
                     continue
                 if self._search_points_adjacent(search_idxs, left_values, right_values):
@@ -593,6 +619,36 @@ class FastVTunerSystem(SystemBase):
 
         return used_steps
 
+    def _run_search_expansion(self, index_type, base_params, search_idxs, current_values, directions):
+        records = []
+        used_steps = 0
+        prev_values = None
+        prev_recall = None
+        while used_steps < MAX_SEARCH_ONLY_STEPS:
+            values = tuple(current_values[idx] for idx in search_idxs)
+            record = self._run_search_only_at_values(index_type, base_params, search_idxs, values)
+            self._insert_search_record(records, values, record.recall)
+            used_steps += 1
+
+            if prev_values is not None:
+                if (
+                    abs(record.recall - prev_recall) <= self.search_expansion_recall_span
+                    or self._search_points_adjacent(search_idxs, prev_values, values)
+                ):
+                    break
+
+            next_values = {}
+            for idx, value in current_values.items():
+                next_values[idx] = self._next_search_value(idx, value, directions[idx])
+
+            if next_values == current_values:
+                break
+            prev_values = values
+            prev_recall = record.recall
+            current_values = next_values
+
+        return records, used_steps
+
     def _run_monotonic_search_only(self, index_type):
         search_idxs = self._get_search_param_idxs(index_type)
         if not search_idxs:
@@ -612,40 +668,22 @@ class FastVTunerSystem(SystemBase):
                 param_min, param_max = value_range
                 current_values[idx] = param_min if direction == "increasing" else param_max
 
-        records = []
-        used_steps = 0
         old_skip_build = self.skip_build
         try:
-            while used_steps < MAX_SEARCH_ONLY_STEPS:
-                values = tuple(current_values[idx] for idx in search_idxs)
-                record = self._run_search_only_at_values(index_type, base_params, search_idxs, values)
-                records.append((values, record.recall))
-                used_steps += 1
-
-                if len(records) > 1:
-                    used_steps += self._refine_search_recall_gaps(
-                        index_type,
-                        base_params,
-                        search_idxs,
-                        records,
-                        MAX_SEARCH_ONLY_STEPS - used_steps,
-                    )
-
-                    left_values, left_recall = records[-2]
-                    right_values, right_recall = records[-1]
-                    if (
-                        abs(right_recall - left_recall) <= self.search_recall_span
-                        or self._search_points_adjacent(search_idxs, left_values, right_values)
-                    ):
-                        break
-
-                next_values = {}
-                for idx, value in current_values.items():
-                    next_values[idx] = self._next_search_value(idx, value, directions[idx])
-
-                if next_values == current_values:
-                    break
-                current_values = next_values
+            records, used_steps = self._run_search_expansion(
+                index_type,
+                base_params,
+                search_idxs,
+                current_values,
+                directions,
+            )
+            self._refine_search_recall_gaps(
+                index_type,
+                base_params,
+                search_idxs,
+                records,
+                MAX_SEARCH_ONLY_STEPS - used_steps,
+            )
         finally:
             self.skip_build = old_skip_build
             self.vdb_config.set_original_param(base_params)
