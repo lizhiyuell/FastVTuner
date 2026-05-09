@@ -4,3 +4,5 @@ vector-db-benchmark/
 .vscode/
 *.png
 *.csv
+config/current.json
+docker_config/milvus/milvus.yaml
