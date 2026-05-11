@@ -15,8 +15,8 @@ from systems.vdb_engine import VDBEngine
 
 
 DATASET_NAMES = [
-    "gist-random-p1",
-    "gist-random-p10",
+    # "gist-random-p1",
+    # "gist-random-p10",
     "gist",
 ]
 CONFIG_PATH = PROJECT_ROOT / "sampling" / "milvus_random_sampling.jsonl"
