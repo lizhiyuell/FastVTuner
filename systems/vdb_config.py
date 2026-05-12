@@ -93,6 +93,14 @@ class VDBConfig:
 
         # default values of the normalized parameters
         self.default_config = self.get_normalized_param()
+        self.default_params = self.get_original_param()
+
+    def set_params_to_default_values(self, apply=True, amp_ratio=1) -> None:
+        self.set_original_param(
+            list(self.default_params),
+            apply=apply,
+            amp_ratio=amp_ratio,
+        )
 
     def param_normalized(self) -> None:
         self.normalized_parameter = []

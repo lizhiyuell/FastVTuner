@@ -44,7 +44,7 @@ NR_SEARCH_PER_BUILD = 5
 SEARCH_RECALL_SPAN = 0.05
 SEARCH_EXPANSION_RECALL_SPAN = 0.01
 MAX_SEARCH_ONLY_STEPS = 32
-SAMPLING = True
+SAMPLING = False
 MIN_SAMPLED_RECALL_FOR_FULL_TEST = 0.7
 MAX_SAMPLED_RECALL_FOR_FULL_TEST = 1.0
 SAMPLED_RECALL_BLEND_INITIAL_WEIGHT = 0.7
@@ -631,10 +631,7 @@ class FastVTunerSystem(SystemBase):
             used_steps += 1
 
             if prev_values is not None:
-                if (
-                    abs(record.recall - prev_recall) <= self.search_expansion_recall_span
-                    or self._search_points_adjacent(search_idxs, prev_values, values)
-                ):
+                if abs(record.recall - prev_recall) <= self.search_expansion_recall_span:
                     break
 
             next_values = {}
