@@ -50,28 +50,86 @@ def collect_results(suffix):
     return results
 
 
-def plot_results(results, title, output_path):
+def is_base_dataset(name):
+    return "-" not in name and "_" not in name
+
+
+def group_results(results):
+    base_names = sorted(name for name in results if is_base_dataset(name))
+    grouped = {}
+
+    for base_name in base_names:
+        grouped[base_name] = {}
+        for name, records in results.items():
+            if name == base_name or name.startswith(f"{base_name}-") or name.startswith(f"{base_name}_"):
+                grouped[base_name][name] = records
+
+    return grouped
+
+
+def build_relative_records(records, base_by_step):
+    relative_records = []
+    for item in records:
+        base_item = base_by_step.get(item["step_id"])
+        if not base_item:
+            continue
+
+        relative_item = {"step_id": item["step_id"]}
+        for key in ("recall", "tput"):
+            base_value = base_item[key]
+            relative_item[key] = item[key] / base_value if base_value else None
+        relative_records.append(relative_item)
+    return relative_records
+
+
+def plot_metric(ax, results, key, label, relative=False):
+    for method, records in results.items():
+        xs = []
+        ys = []
+        for item in records:
+            value = item[key]
+            if value is None:
+                continue
+            xs.append(item["step_id"])
+            ys.append(value)
+        ax.scatter(xs, ys, s=1, alpha=0.75, label=method)
+
+    ax.set_ylabel(label)
+    ax.set_xlabel("step_id")
+    ax.grid(True, linestyle="--", linewidth=0.5, alpha=0.4)
+    if key == "recall" and not relative:
+        ax.set_ylim(0, 1)
+    if relative:
+        ax.axhline(1, color="black", linestyle=":", linewidth=0.8, alpha=0.7)
+    if results:
+        ax.legend(loc="best", markerscale=4)
+
+
+def plot_results(results, base_name, title, output_path):
     if not results:
         print(f"skip {output_path}: no data")
         return
 
-    fig, axes = plt.subplots(2, 1, figsize=(12, 8))
-    metrics = [("recall", "Recall"), ("tput", "Tput")]
+    base_records = results.get(base_name)
+    if not base_records:
+        print(f"skip {output_path}: missing base dataset {base_name}")
+        return
 
-    for ax, (key, label) in zip(axes, metrics):
-        for method, records in results.items():
-            xs = [item["step_id"] for item in records]
-            ys = [item[key] for item in records]
-            ax.scatter(xs, ys, s=1, alpha=0.75, label=method)
-        ax.set_ylabel(label)
-        ax.set_xlabel("step_id")
-        ax.grid(True, linestyle="--", linewidth=0.5, alpha=0.4)
-        if key == "recall":
-            ax.set_ylim(0, 1)
+    base_by_step = {item["step_id"]: item for item in base_records}
+    relative_results = {
+        method: build_relative_records(records, base_by_step)
+        for method, records in results.items()
+        if method != base_name
+    }
+
+    fig, axes = plt.subplots(4, 1, figsize=(12, 14))
+    plot_metric(axes[0], results, "recall", "Recall")
+    plot_metric(axes[1], results, "tput", "Tput")
+    plot_metric(axes[2], relative_results, "recall", "Relative Recall", relative=True)
+    plot_metric(axes[3], relative_results, "tput", "Relative Tput", relative=True)
 
     fig.suptitle(title)
-    fig.legend(loc="upper center", ncol=min(4, len(results)), bbox_to_anchor=(0.5, 0.98))
-    fig.tight_layout(rect=(0, 0, 1, 0.94))
+    fig.tight_layout(rect=(0, 0, 1, 0.96))
     fig.savefig(output_path, dpi=200)
     plt.close(fig)
     print(f"wrote {output_path}")
@@ -81,8 +139,18 @@ def main():
     tune_results = collect_results("tune")
     test_results = collect_results("test")
 
-    plot_results(tune_results, "Tune Compare", BASE_DIR / "compare_tune.png")
-    plot_results(test_results, "Test Compare", BASE_DIR / "compare_test.png")
+    for suffix, results in (("tune", tune_results), ("test", test_results)):
+        grouped = group_results(results)
+        base_names = sorted(grouped)
+        print(f"{suffix} base datasets: {', '.join(base_names) if base_names else 'none'}")
+        for base_name, base_results in grouped.items():
+            output_path = BASE_DIR / f"compare_{base_name}_{suffix}.png"
+            plot_results(
+                base_results,
+                base_name,
+                f"{suffix.title()} Compare: {base_name}",
+                output_path,
+            )
 
 
 if __name__ == "__main__":

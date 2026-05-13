@@ -18,8 +18,9 @@ from systems.vdb_engine import VDBEngine
 
 DATASET_NAMES = [
     # "gist",
-    "gist-random-p1",
-    "gist-random-p10",
+    # "gist-random-p1",
+    # "gist-random-p10",
+    "gist_KClose"
 ]
 FULL_DATASET_NAME = "gist"
 CONFIG_META_PATH = PROJECT_ROOT / "config" / "milvus.json"
