@@ -247,13 +247,19 @@ def run_query(engine, params, record, dataset_name, phase, step_id, index_time, 
     ratio = TEST_QUERY_RATIO if is_test else TUNE_QUERY_RATIO
 
     try:
-        query_time, recall, query_count = engine.query(TOP_K, test=is_test, ratio=ratio)
+        query_time, recall, query_count, latency_list, recall_list = engine.query(
+            TOP_K,
+            test=is_test,
+            ratio=ratio,
+        )
         query_throughput = query_count / query_time if query_time > 0 else 0.0
         query_latency = query_time / query_count if query_count > 0 else 0.0
     except Exception:
         query_time = 0.0
         recall = 0.0
         query_count = 0
+        latency_list = []
+        recall_list = []
         query_throughput = 0.0
         query_latency = 0.0
 
@@ -270,6 +276,8 @@ def run_query(engine, params, record, dataset_name, phase, step_id, index_time, 
         "record_nr": query_count,
         "query_throughput": query_throughput,
         "query_latency": query_latency,
+        "latency_list": latency_list,
+        "recall_list": recall_list,
         "skip": False,
         "search_only": search_only,
         "build_sample_id": record.get("build_sample_id"),

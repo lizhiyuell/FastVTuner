@@ -282,39 +282,43 @@ class VDBEngine:
             search_conf = {"metric_type": metric_type, "params": dict(search_params or {})}
 
             total_start = time.perf_counter()
+            latencies = [0.0] * use_count
+            recalls = [0.0] * use_count
             if int(parallel) <= 1:
-                recalls = []
                 for i in range(use_count):
+                    query_start = time.perf_counter()
                     res = collection.search(
                         data=[vectors[i].tolist()],
                         anns_field="vector",
                         param=search_conf,
                         limit=top_k,
                     )
+                    latencies[i] = time.perf_counter() - query_start
                     ids = set(res[0].ids)
                     gt = set(np.asarray(query_top100[i]).tolist()[:top_k])
-                    recalls.append(len(ids.intersection(gt)) / top_k)
+                    recalls[i] = len(ids.intersection(gt)) / top_k
             else:
-                with ThreadPoolExecutor(max_workers=int(parallel)) as executor:
-                    results = list(
-                        executor.map(
-                            lambda i: collection.search(
-                                data=[vectors[i].tolist()],
-                                anns_field="vector",
-                                param=search_conf,
-                                limit=top_k,
-                            ),
-                            range(use_count),
-                        )
+                def search_one(i):
+                    query_start = time.perf_counter()
+                    res = collection.search(
+                        data=[vectors[i].tolist()],
+                        anns_field="vector",
+                        param=search_conf,
+                        limit=top_k,
                     )
-                recalls = []
-                for i, res in enumerate(results):
+                    latency = time.perf_counter() - query_start
+                    return i, res, latency
+
+                with ThreadPoolExecutor(max_workers=int(parallel)) as executor:
+                    results = list(executor.map(search_one, range(use_count)))
+                for i, res, latency in results:
+                    latencies[i] = latency
                     ids = set(res[0].ids)
                     gt = set(np.asarray(query_top100[i]).tolist()[:top_k])
-                    recalls.append(len(ids.intersection(gt)) / top_k)
+                    recalls[i] = len(ids.intersection(gt)) / top_k
 
             total_query_time = time.perf_counter() - total_start
-            return total_query_time, float(np.mean(recalls)), use_count
+            return total_query_time, float(np.mean(recalls)), use_count, latencies, recalls
         else:
             raise NotImplementedError(f"query is not implemented for {self.db_type}")
 
@@ -353,7 +357,7 @@ if __name__=="__main__":
 
     print(f"Build finish in {ts}")
 
-    ts, recall, query_count = vdbengine.query(10, False, 1.0)
+    ts, recall, query_count, latency_list, recall_list = vdbengine.query(10, False, 1.0)
 
     print(f"Search time {ts}, recall {recall}%, query_count {query_count}")
 

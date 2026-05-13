@@ -866,7 +866,7 @@ class FastVTunerSystem(SystemBase):
         try:
             try:
                 sampled_record["index_time"] = self.sampled_vdb_engine.build()
-                query_time, recall, query_count = self.sampled_vdb_engine.query(
+                query_time, recall, query_count, _, _ = self.sampled_vdb_engine.query(
                     self._top_k,
                     test=True,
                     ratio=self._single_test_query_ratio,
@@ -921,7 +921,11 @@ class FastVTunerSystem(SystemBase):
                 query_throughput=0.0,
                 query_latency=0.0,
                 skip=True,
-                extra=self._build_extra_record(search_only=self.skip_build),
+                extra={
+                    **self._build_extra_record(search_only=self.skip_build),
+                    "latency_list": [],
+                    "recall_list": [],
+                },
             )
 
         print(f"[FastVTuner] round {self._step_id}: start tune", flush=True)
@@ -930,7 +934,7 @@ class FastVTunerSystem(SystemBase):
                 build_time = 0
             else:
                 build_time = self.vdb_engine.build()
-            query_time, recall, query_count = self.vdb_engine.query(
+            query_time, recall, query_count, latency_list, recall_list = self.vdb_engine.query(
                 self._top_k,
                 test=False,
                 ratio=self._single_tune_query_ratio,
@@ -940,6 +944,7 @@ class FastVTunerSystem(SystemBase):
         except:
             build_time = 0
             query_time, recall, query_count = 0, 0, 0
+            latency_list, recall_list = [], []
             query_throughput = 0
             query_latency = 0
 
@@ -961,7 +966,11 @@ class FastVTunerSystem(SystemBase):
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
-            extra=self._build_extra_record(search_only=self.skip_build),
+            extra={
+                **self._build_extra_record(search_only=self.skip_build),
+                "latency_list": latency_list,
+                "recall_list": recall_list,
+            },
         )
 
     # in case of failed building
@@ -986,12 +995,16 @@ class FastVTunerSystem(SystemBase):
                 query_throughput=0.0,
                 query_latency=0.0,
                 skip=True,
-                extra=self._build_extra_record(search_only=self.skip_build),
+                extra={
+                    **self._build_extra_record(search_only=self.skip_build),
+                    "latency_list": [],
+                    "recall_list": [],
+                },
             )
 
         print(f"[FastVTuner] round {self._step_id}: start test", flush=True)
         try:
-            query_time, recall, query_count = self.vdb_engine.query(
+            query_time, recall, query_count, latency_list, recall_list = self.vdb_engine.query(
                 self._top_k,
                 test=True,
                 ratio=self._single_test_query_ratio,
@@ -1000,6 +1013,7 @@ class FastVTunerSystem(SystemBase):
             query_latency = query_time / query_count if query_count > 0 else 0.0
         except:
             query_time, recall, query_count = 0, 0, 0
+            latency_list, recall_list = [], []
             query_throughput = 0
             query_latency = 0
         return TuningRecord(
@@ -1020,7 +1034,11 @@ class FastVTunerSystem(SystemBase):
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
-            extra=self._build_extra_record(search_only=self.skip_build),
+            extra={
+                **self._build_extra_record(search_only=self.skip_build),
+                "latency_list": latency_list,
+                "recall_list": recall_list,
+            },
         )
 
 def main():

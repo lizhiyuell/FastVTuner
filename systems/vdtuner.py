@@ -356,7 +356,7 @@ class VDTunerSystem(SystemBase):
         print(f"[VDTuner] round {self._step_id}: start build", flush=True)
         try:
             build_time = self.vdb_engine.build()
-            query_time, recall, query_count = self.vdb_engine.query(
+            query_time, recall, query_count, latency_list, recall_list = self.vdb_engine.query(
                 self._top_k,
                 test=False,
                 ratio=self._single_tune_query_ratio,
@@ -366,6 +366,7 @@ class VDTunerSystem(SystemBase):
         except:
             build_time = 0
             query_time, recall, query_count = 0, 0, 0
+            latency_list, recall_list = [], []
             query_throughput = 0
             query_latency = 0
 
@@ -387,13 +388,17 @@ class VDTunerSystem(SystemBase):
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
+            extra={
+                "latency_list": latency_list,
+                "recall_list": recall_list,
+            },
         )
 
     # in case of failed building
     def _single_test_impl(self):
         print(f"[VDTuner] round {self._step_id}: start test", flush=True)
         try:
-            query_time, recall, query_count = self.vdb_engine.query(
+            query_time, recall, query_count, latency_list, recall_list = self.vdb_engine.query(
                 self._top_k,
                 test=True,
                 ratio=self._single_test_query_ratio,
@@ -402,6 +407,7 @@ class VDTunerSystem(SystemBase):
             query_latency = query_time / query_count if query_count > 0 else 0.0
         except:
             query_time, recall, query_count = 0, 0, 0
+            latency_list, recall_list = [], []
             query_throughput = 0
             query_latency = 0
 
@@ -423,6 +429,10 @@ class VDTunerSystem(SystemBase):
             record_nr=query_count,
             query_throughput=query_throughput,
             query_latency=query_latency,
+            extra={
+                "latency_list": latency_list,
+                "recall_list": recall_list,
+            },
         )
 
 def main():
